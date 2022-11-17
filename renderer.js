@@ -73,13 +73,14 @@ function initProgram() {
     // Set up the buffers
 function initBuffers() {
     // clear your points and elements
-    points =   [0, 0, 0, 1.0,
-                0, 5, 5, 1.0,
-                5, 5, 5, 1.0,
-                5, 0, 0, 1.0];
-    indices =  [2, 1, 0,
-                1, 2, 0];
+    points =   [-.5, -.25, -.5,
+                -.5, -.25, .5,
+                .5, -.25, .5,
+                .5, -.25, -.5];
+    indices =  [0, 1, 2,
+                2, 3, 0];
 
+    
 
 
 
@@ -92,7 +93,7 @@ function initBuffers() {
     gl.bindBuffer(gl.ARRAY_BUFFER, myVertexBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(points), gl.STATIC_DRAW);
     gl.enableVertexAttribArray(program.aVertexPosition);
-    gl.vertexAttribPointer(program.aVertexPosition, 4, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(program.aVertexPosition, 3, gl.FLOAT, false, 0, 0);
     
     // uniform values
     

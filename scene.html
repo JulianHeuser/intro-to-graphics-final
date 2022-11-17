@@ -13,9 +13,16 @@
         // Supplied vertex position attribute
         in vec4 aVertexPosition;
 
+        mat4 projection = mat4(
+          1, 0, 0, 0,
+          0, 1, 0, 0,
+          0, 0, 1, .5,
+          0, 0, 0, .5
+        );
+
         void main(void) {
-          // Simply set the position in clipspace coordinates
-          gl_Position = aVertexPosition;
+
+          gl_Position = projection * vec4(aVertexPosition.xyz, 1.0);
         }
     </script>
 
