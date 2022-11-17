@@ -5,12 +5,10 @@
 let gl,
 program,
 points,
-bary,
 indices
 
 var myVAO = null;
 var myVertexBuffer = null;
-var myBaryBuffer = null;
 var myIndexBuffer = null;
 
 // Given an id, extract the content's of a shader script
@@ -70,16 +68,17 @@ function initProgram() {
     // We attach the location of these shader values to the program instance
     // for easy access later in the code
     program.aVertexPosition = gl.getAttribLocation(program, 'aVertexPosition');
-    program.aBary = gl.getAttribLocation(program, 'bary');
-
 }
 
     // Set up the buffers
 function initBuffers() {
     // clear your points and elements
-    points = [];
-    indices = [];
-    bary = [];
+    points =   [0, 0, 0, 1.0,
+                0, 5, 5, 1.0,
+                5, 5, 5, 1.0,
+                5, 0, 0, 1.0];
+    indices =  [2, 1, 0,
+                1, 2, 0];
 
 
 
@@ -94,13 +93,6 @@ function initBuffers() {
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(points), gl.STATIC_DRAW);
     gl.enableVertexAttribArray(program.aVertexPosition);
     gl.vertexAttribPointer(program.aVertexPosition, 4, gl.FLOAT, false, 0, 0);
-    
-    // create and bind bary buffer
-    if (myBaryBuffer == null) myBaryBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, myBaryBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(bary), gl.STATIC_DRAW);
-    gl.enableVertexAttribArray(program.aBary);
-    gl.vertexAttribPointer(program.aBary, 3, gl.FLOAT, false, 0, 0);
     
     // uniform values
     
@@ -163,18 +155,14 @@ function init() {
     gl.clearColor(0, 0, 0, 1);
       
     // some GL initialization
-    gl.enable(gl.DEPTH_TEST);
-    gl.enable(gl.CULL_FACE);
+    //gl.enable(gl.DEPTH_TEST);
+    //gl.enable(gl.CULL_FACE);
     
-    gl.cullFace(gl.BACK);
+    //gl.cullFace(gl.BACK);
     gl.frontFace(gl.CCW);
     gl.clearColor(0.0,0.0,0.0,1.0)
     gl.depthFunc(gl.LEQUAL)
     gl.clearDepth(1.0)
-
-    // Set the clear color to be black
-
-    gl.clearColor(0, 0, 0, 1);
 
     // Call the functions in an appropriate order
     initProgram();

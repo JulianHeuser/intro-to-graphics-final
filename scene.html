@@ -11,12 +11,11 @@
         precision mediump float;
 
         // Supplied vertex position attribute
-        in vec3 aVertexPosition;
+        in vec4 aVertexPosition;
 
         void main(void) {
           // Simply set the position in clipspace coordinates
-          gl_Position = vec4(aVertexPosition, 1.0);
-          gl_PointSize = 5.0;
+          gl_Position = aVertexPosition;
         }
     </script>
 
@@ -41,7 +40,7 @@
 
 <body>
 
-  <canvas id="webgl-canvas">
+  <canvas id="webgl-canvas" style = "position: absolute; top: 0; left: 0;">
     Your browser does not support the HTML5 canvas element.
   </canvas>
 
