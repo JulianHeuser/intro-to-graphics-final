@@ -11,6 +11,16 @@ var myVAO = null;
 var myVertexBuffer = null;
 var myIndexBuffer = null;
 
+
+var fieldOfView = 1.22173;
+const frusLeft = -3.0;
+const frusRight = 3.0;
+const frusBottom = -3.0;
+const frusTop = 3.0;
+var nearClippingPlaneDist = 1.0;
+var farClippingPlaneDist = 100.0;
+var aspectRatio = 0.0;
+
 // Given an id, extract the content's of a shader script
 // from the DOM and return the compiled shader
 function getShader(id) {
@@ -68,17 +78,63 @@ function initProgram() {
     // We attach the location of these shader values to the program instance
     // for easy access later in the code
     program.aVertexPosition = gl.getAttribLocation(program, 'aVertexPosition');
+    program.projection = gl.getUniformLocation (program, 'projection');
+
 }
 
     // Set up the buffers
 function initBuffers() {
     // clear your points and elements
-    points =   [-.5, -.25, -.5,
-                -.5, -.25, .5,
-                .5, -.25, .5,
-                .5, -.25, -.5];
-    indices =  [0, 1, 2,
-                2, 3, 0];
+    points =   [
+        // Front face
+        -1.0, -1.0,  1.0,
+         1.0, -1.0,  1.0,
+         1.0,  1.0,  1.0,
+        -1.0,  1.0,  1.0,
+  
+        // Back face
+        -1.0, -1.0, -1.0,
+        -1.0,  1.0, -1.0,
+         1.0,  1.0, -1.0,
+         1.0, -1.0, -1.0,
+  
+        // Top face
+        -1.0,  1.0, -1.0,
+        -1.0,  1.0,  1.0,
+         1.0,  1.0,  1.0,
+         1.0,  1.0, -1.0,
+  
+        // Bottom face
+        -1.0, -1.0, -1.0,
+         1.0, -1.0, -1.0,
+         1.0, -1.0,  1.0,
+        -1.0, -1.0,  1.0,
+  
+        // Right face
+         1.0, -1.0, -1.0,
+         1.0,  1.0, -1.0,
+         1.0,  1.0,  1.0,
+         1.0, -1.0,  1.0,
+  
+        // Left face
+        -1.0, -1.0, -1.0,
+        -1.0, -1.0,  1.0,
+        -1.0,  1.0,  1.0,
+        -1.0,  1.0, -1.0
+      ];
+
+    for (let i = 2; i < points.length; i += 3){
+        points[i] -= 5;
+    }
+
+    indices =  [
+        0,  1,  2,      0,  2,  3,    // front
+        4,  5,  6,      4,  6,  7,    // back
+        8,  9,  10,     8,  10, 11,   // top
+        12, 13, 14,     12, 14, 15,   // bottom
+        16, 17, 18,     16, 18, 19,   // right
+        20, 21, 22,     20, 22, 23    // left
+      ]
 
     
 
@@ -96,7 +152,15 @@ function initBuffers() {
     gl.vertexAttribPointer(program.aVertexPosition, 3, gl.FLOAT, false, 0, 0);
     
     // uniform values
-    
+    let verticalFOV = fieldOfView * (aspectRatio);
+    let projectionMat4 =[
+        Math.atan(fieldOfView/2.0), 0, 0, 0,
+        0, Math.atan(verticalFOV), 0, 0,
+        0, 0, ((farClippingPlaneDist+nearClippingPlaneDist)/(farClippingPlaneDist-nearClippingPlaneDist)),-((2.0*(nearClippingPlaneDist*farClippingPlaneDist))/(farClippingPlaneDist-nearClippingPlaneDist)),
+        0, 0, -1, 0
+    ];
+    gl.uniformMatrix4fv(program.projection, false, new Float32Array(projectionMat4));
+
     
     // Setting up the IBO
     if (myIndexBuffer == null) myIndexBuffer = gl.createBuffer();
@@ -112,10 +176,6 @@ function initBuffers() {
 
     // We call draw to render to our canvas
 function draw() {
-
-    // Clear the scene
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
     // Clear the scene
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -149,21 +209,20 @@ function init() {
 
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+    aspectRatio = canvas.width/canvas.height;
 
     // Retrieve a WebGL context
     gl = canvas.getContext('webgl2');
-    // Set the clear color to be black
-    gl.clearColor(0, 0, 0, 1);
       
     // some GL initialization
     //gl.enable(gl.DEPTH_TEST);
     //gl.enable(gl.CULL_FACE);
     
     //gl.cullFace(gl.BACK);
-    gl.frontFace(gl.CCW);
+    //gl.frontFace(gl.CCW);
     gl.clearColor(0.0,0.0,0.0,1.0)
-    gl.depthFunc(gl.LEQUAL)
-    gl.clearDepth(1.0)
+    //gl.depthFunc(gl.LEQUAL)
+    //gl.clearDepth(1.0)
 
     // Call the functions in an appropriate order
     initProgram();

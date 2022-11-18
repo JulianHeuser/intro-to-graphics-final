@@ -12,17 +12,23 @@
 
         // Supplied vertex position attribute
         in vec4 aVertexPosition;
+        
+        mat4 view;
 
-        mat4 projection = mat4(
-          1, 0, 0, 0,
-          0, 1, 0, 0,
-          0, 0, 1, .5,
-          0, 0, 0, .5
-        );
+        uniform mat4 projection;
+        vec2 fov = vec2(45.0,45.0);
+        float far = 1000.0;
+        float near = 0.5;
 
         void main(void) {
 
-          gl_Position = projection * vec4(aVertexPosition.xyz, 1.0);
+          view[0] = vec4(1,0,0,0);
+          view[1] = vec4(0,1,0,0);
+          view[2] = vec4(0,0,1,0);
+          view[3] = vec4(0,0,0,1);
+          
+
+          gl_Position = projection * view * vec4(aVertexPosition.xyz, 1.0);
         }
     </script>
 
@@ -36,7 +42,7 @@
 
         void main(void) {
           // Set the result as red
-          fragColor = vec4(1.0, 0.0, 0.0, 1.0);
+          fragColor = vec4(1,0,0,1);
         }
     </script>
 
