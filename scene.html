@@ -14,12 +14,25 @@
         in vec4 aVertexPosition;
         
         uniform mat4 projection;
-
         uniform mat4 view;
 
-        void main(void) {
-          gl_Position = projection * view * vec4(aVertexPosition.xyz, 1.0);
+        out vec4 vertexPos;
+
+        // Pseudo-random number generator
+        float rand(vec2 co){
+          return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);
         }
+      
+        void main(void) {
+          // Apply Projection and view matrices
+          gl_Position = projection * view * vec4(aVertexPosition.xyz, 1.0);
+
+          // Random y displacement for terrain
+          gl_Position.y += rand(gl_Position.xz);
+
+          vertexPos = aVertexPosition;
+        }
+
     </script>
 
     <!-- fragment Shader -->
@@ -27,17 +40,21 @@
         #version 300 es
         precision mediump float;
 
+        in vec4 vertexPos;
+
         // Color that is the result of this shader
         out vec4 fragColor;
 
         void main(void) {
           // Set the result as red
-          fragColor = vec4(1,0,0,1);
+          fragColor = vertexPos;
         }
     </script>
 
     <!-- This is the bulk of the actual WebGL stuff -->
     <script type="text/javascript" src="renderer.js"></script>
+
+    <script type="text/javascript" src="terrainGen.js"></script>
 
 </head>
 

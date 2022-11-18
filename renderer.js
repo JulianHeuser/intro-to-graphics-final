@@ -17,7 +17,7 @@ var nearClippingPlaneDist = 1.0;
 var farClippingPlaneDist = 100.0;
 var aspectRatio = 0.0;
 
-var camPosition = [0,0,0];
+var camPosition = [0,0,-5];
 
 // Given an id, extract the content's of a shader script
 // from the DOM and return the compiled shader
@@ -84,60 +84,9 @@ function initProgram() {
     // Set up the buffers
 function initBuffers() {
     // clear your points and elements
-    points =   [
-        // Front face
-        -1.0, -1.0,  1.0,
-         1.0, -1.0,  1.0,
-         1.0,  1.0,  1.0,
-        -1.0,  1.0,  1.0,
-  
-        // Back face
-        -1.0, -1.0, -1.0,
-        -1.0,  1.0, -1.0,
-         1.0,  1.0, -1.0,
-         1.0, -1.0, -1.0,
-  
-        // Top face
-        -1.0,  1.0, -1.0,
-        -1.0,  1.0,  1.0,
-         1.0,  1.0,  1.0,
-         1.0,  1.0, -1.0,
-  
-        // Bottom face
-        -1.0, -1.0, -1.0,
-         1.0, -1.0, -1.0,
-         1.0, -1.0,  1.0,
-        -1.0, -1.0,  1.0,
-  
-        // Right face
-         1.0, -1.0, -1.0,
-         1.0,  1.0, -1.0,
-         1.0,  1.0,  1.0,
-         1.0, -1.0,  1.0,
-  
-        // Left face
-        -1.0, -1.0, -1.0,
-        -1.0, -1.0,  1.0,
-        -1.0,  1.0,  1.0,
-        -1.0,  1.0, -1.0
-      ];
-
-    for (let i = 2; i < points.length; i += 3){
-        points[i] -= 5;
-    }
-
-    indices =  [
-        0,  1,  2,      0,  2,  3,    // front
-        4,  5,  6,      4,  6,  7,    // back
-        8,  9,  10,     8,  10, 11,   // top
-        12, 13, 14,     12, 14, 15,   // bottom
-        16, 17, 18,     16, 18, 19,   // right
-        20, 21, 22,     20, 22, 23    // left
-      ]
-
-    
-
-
+    let planeData = createPlane(5, 10, -2);
+    points = planeData[0];
+    indices = planeData[1];
 
     //create and bind VAO
     if (myVAO == null) myVAO = gl.createVertexArray();
@@ -164,7 +113,6 @@ function initBuffers() {
 
     // We call draw to render to our canvas
 function draw() {
-
    
     // uniform values
     let verticalFOV = fieldOfView * (aspectRatio);
@@ -176,9 +124,6 @@ function draw() {
     ];
     gl.uniformMatrix4fv(program.projection, false, new Float32Array(projectionMat4));
 
-    camPosition[0] = Math.sin((new Date()).getTime() / 510) * 5;
-    camPosition[1] = Math.sin((new Date()).getTime() / 550) * 5;
-    camPosition[2] = Math.sin((new Date()).getTime() / 400) * 5;
     let lookAngle = 0;
     let viewMat4 = [
         1,0,0,0,
