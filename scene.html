@@ -13,21 +13,11 @@
         // Supplied vertex position attribute
         in vec4 aVertexPosition;
         
-        mat4 view;
-
         uniform mat4 projection;
-        vec2 fov = vec2(45.0,45.0);
-        float far = 1000.0;
-        float near = 0.5;
+
+        uniform mat4 view;
 
         void main(void) {
-
-          view[0] = vec4(1,0,0,0);
-          view[1] = vec4(0,1,0,0);
-          view[2] = vec4(0,0,1,0);
-          view[3] = vec4(0,0,0,1);
-          
-
           gl_Position = projection * view * vec4(aVertexPosition.xyz, 1.0);
         }
     </script>
