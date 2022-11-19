@@ -84,7 +84,7 @@ function initProgram() {
     // Set up the buffers
 function initBuffers() {
     // clear your points and elements
-    let planeData = createPlane(5, 10, -2);
+    let planeData = createPlane(50, 50, -2);
     points = planeData[0];
     indices = planeData[1];
 
