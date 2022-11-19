@@ -61,7 +61,7 @@
         }
 
         float getTerrainHeight(vec2 coord){
-          return cnoise(coord / 6.0) + (.25 * cnoise(coord / 3.0)) + (.125 * cnoise(coord / 1.5));
+          return cnoise(coord / 12.0) + (.25 * cnoise(coord / 6.0)) + (.125 * cnoise(coord / 3.0));
         }
       
         void main(void) {
@@ -69,14 +69,14 @@
           gl_Position = projection * view * vec4(aVertexPosition.xyz, 1.0);
 
           // Calculate normals
-          float L = getTerrainHeight(gl_Position.xz + vec2(-.2, 0));
-          float R = getTerrainHeight(gl_Position.xz + vec2(.02, 0));
-          float T = getTerrainHeight(gl_Position.xz + vec2(0, .02));
-          float B = getTerrainHeight(gl_Position.xz + vec2(0, -.02));
-          normal = normalize(vec3(2.0*(R-L), 2.0*(B-T), -4)); //vec3(rand(gl_Position.xz), rand(gl_Position.xz * 1.2), rand(gl_Position.xz * 2.5)); //
+          float L = getTerrainHeight(aVertexPosition.xz + vec2(-.2, 0));
+          float R = getTerrainHeight(aVertexPosition.xz + vec2(.02, 0));
+          float T = getTerrainHeight(aVertexPosition.xz + vec2(0, .02));
+          float B = getTerrainHeight(aVertexPosition.xz + vec2(0, -.02));
+          normal = normalize(vec3(2.0*(R-L), 2.0*(B-T), -4)); //vec3(rand(aVertexPosition.xz), rand(aVertexPosition.xz * 1.2), rand(aVertexPosition.xz * 2.5)); //
           
           // Random y displacement for terrain
-          gl_Position.y += getTerrainHeight(gl_Position.xz) * 5.0 - 2.0;
+          gl_Position.y += getTerrainHeight(aVertexPosition.xz) * 5.0 - 2.0;
 
         }
 

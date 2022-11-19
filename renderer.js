@@ -113,6 +113,8 @@ function initBuffers() {
 
     // We call draw to render to our canvas
 function draw() {
+    // Move camera
+    //camPosition[2] += .1;
    
     // uniform values
     let verticalFOV = fieldOfView * (aspectRatio);
