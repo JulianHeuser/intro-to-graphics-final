@@ -11,9 +11,11 @@ function makeSphere(sliceCount, stackCount){
     let radius = diameter / 2.0;
     // vertex points
     let x, y, z, rcosTheta;
-    let vertices, normals = new Array();
+    let vertices, normals, textureCoords = new Array();
     // vertex normal points
     let xnorm, ynorm, znorm, inverseLen = 1.0 / radius;
+    // texture coordinates
+    let u, v;
 
     // slice and stack value for each iteration
     let sliceStep = (Math.PI *2) / sliceCount;
@@ -49,7 +51,11 @@ function makeSphere(sliceCount, stackCount){
             normals.push(ynorm);
             normals.push(znorm);
 
-            // vertex tex coords (s, t) range between [0, 1]
+            // vertex texture coordinates (u, v) range between [0, 1]
+            u = parseFloat(j) / sliceCount;
+            v = parseFloat(i) / stackCount;
+            textureCoords.push(u);
+            textureCoords.push(v);
 
         }
     }
