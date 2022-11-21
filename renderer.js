@@ -12,7 +12,7 @@ var myVertexBuffer = null;
 var myIndexBuffer = null;
 
 
-var fieldOfView = 1.22173;
+var fieldOfView = 2.094395;
 var nearClippingPlaneDist = 1.0;
 var farClippingPlaneDist = 100.0;
 var aspectRatio = 0.0;
@@ -84,7 +84,7 @@ function initProgram() {
     // Set up the buffers
 function initBuffers() {
     // clear your points and elements
-    let planeData = createPlane(50, 50, -2);
+    let planeData = createPlane(100, 50, -5);
     points = planeData[0];
     indices = planeData[1];
 
@@ -111,11 +111,15 @@ function initBuffers() {
 
 }
 
+
+let camAngle = [0,0,0];
+
     // We call draw to render to our canvas
 function draw() {
     // Move camera
     //camPosition[2] += .1;
-   
+    camAngle[1] += .01;
+
     // uniform values
     let verticalFOV = fieldOfView * (aspectRatio);
     let projectionMat4 =[
@@ -126,12 +130,12 @@ function draw() {
     ];
     gl.uniformMatrix4fv(program.projection, false, new Float32Array(projectionMat4));
 
-    let lookAngle = 0;
+    // Rotation + transformation matrix
     let viewMat4 = [
-        1,0,0,0,
-        0,1,0,0,
-        0,0,1,0,
-        camPosition[0],camPosition[1],camPosition[2],1
+        Math.cos(camAngle[1]), 0, -Math.sin(camAngle[1]), 0,
+        0, 1, 0, 0,
+        Math.sin(camAngle[1]), 0, Math.cos(camAngle[1]), 0,
+        camPosition[0], camPosition[1], camPosition[2], 1
     ]
     gl.uniformMatrix4fv(program.view, false, new Float32Array(viewMat4));
     
