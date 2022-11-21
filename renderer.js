@@ -6,18 +6,13 @@ let gl, program
 
 var terrainGen = new TerrainGen();
 
-var myVAO = null;
-var myVertexBuffer = null;
-var myIndexBuffer = null;
-
-
 var fieldOfView = 2.094395;
 var nearClippingPlaneDist = 1.0;
 var farClippingPlaneDist = 100.0;
 var aspectRatio = 0.0;
 
 var camPosition = [0,0,-5];
-let camAngle = [0,60,0];
+let camAngle = [0,0,0];
 
 // Given an id, extract the content's of a shader script
 // from the DOM and return the compiled shader
@@ -84,7 +79,7 @@ function initProgram() {
     // Set up the buffers
 function initBuffers() {
 
-    terrainGen.bufferPlaneData(0, -5, 0);
+    terrainGen.bufferPlaneData(0 , 0);
 
     // Clean
     gl.bindVertexArray(null);
@@ -99,8 +94,11 @@ function draw() {
     
     // Move camera
     camPosition[2] += .1;
+    camPosition[0] += .05;
     const d = new Date();
-    camAngle[1] = Math.sin(d.getTime() / 5000);
+    //camAngle[1] = Math.sin(d.getTime() / 5000);
+
+    terrainGen.planeUpdate(camPosition[0], camPosition[2]);
 
     // uniform values
     let verticalFOV = fieldOfView * (aspectRatio);
@@ -127,8 +125,7 @@ function draw() {
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
     // Bind the VAO
-    gl.bindVertexArray(myVAO);
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, myIndexBuffer);
+    terrainGen.bindPlaneData();
 
     // Draw to the scene using triangle primitives
     gl.drawElements(gl.TRIANGLES, terrainGen.indices.length, gl.UNSIGNED_SHORT, 0);
