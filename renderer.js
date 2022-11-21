@@ -2,10 +2,9 @@
 
 // Global variables that are set and used
 // across the application
-let gl,
-program,
-points,
-indices
+let gl, program
+
+var terrainGen = new TerrainGen();
 
 var myVAO = null;
 var myVertexBuffer = null;
@@ -18,6 +17,7 @@ var farClippingPlaneDist = 100.0;
 var aspectRatio = 0.0;
 
 var camPosition = [0,0,-5];
+let camAngle = [0,60,0];
 
 // Given an id, extract the content's of a shader script
 // from the DOM and return the compiled shader
@@ -83,42 +83,24 @@ function initProgram() {
 
     // Set up the buffers
 function initBuffers() {
-    // clear your points and elements
-    let planeData = createPlane(100, 50, -5);
-    points = planeData[0];
-    indices = planeData[1];
 
-    //create and bind VAO
-    if (myVAO == null) myVAO = gl.createVertexArray();
-    gl.bindVertexArray(myVAO);
-    
-    // create and bind vertex buffer
-    if (myVertexBuffer == null) myVertexBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, myVertexBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(points), gl.STATIC_DRAW);
-    gl.enableVertexAttribArray(program.aVertexPosition);
-    gl.vertexAttribPointer(program.aVertexPosition, 3, gl.FLOAT, false, 0, 0);
- 
-    // Setting up the IBO
-    if (myIndexBuffer == null) myIndexBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, myIndexBuffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+    terrainGen.bufferPlaneData(0, -5, 0);
 
     // Clean
     gl.bindVertexArray(null);
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
-
 }
 
 
-let camAngle = [0,0,0];
 
-    // We call draw to render to our canvas
+// We call draw to render to our canvas
 function draw() {
+    
     // Move camera
-    //camPosition[2] += .1;
-    camAngle[1] += .01;
+    camPosition[2] += .1;
+    const d = new Date();
+    camAngle[1] = Math.sin(d.getTime() / 5000);
 
     // uniform values
     let verticalFOV = fieldOfView * (aspectRatio);
@@ -149,7 +131,7 @@ function draw() {
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, myIndexBuffer);
 
     // Draw to the scene using triangle primitives
-    gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
+    gl.drawElements(gl.TRIANGLES, terrainGen.indices.length, gl.UNSIGNED_SHORT, 0);
 
     // Clean
     gl.bindVertexArray(null);
