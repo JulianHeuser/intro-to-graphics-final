@@ -10,6 +10,17 @@ indices
 var myVAO = null;
 var myVertexBuffer = null;
 var myIndexBuffer = null;
+// add sphere vertex buffer or struct of vertices and loop through
+// figure out whether to add vertex buffer
+// draw funciton draws every frame
+// uniform values get sent to the shader
+// projection view matrix in scene.html
+// change near clipping plane number because things are getting to close to the camera
+// field of view = high
+// i should use the projection and view matrix in draw( ) in render.js so that the sphere will move too
+// add another matrix for object movement (model coordinates) in column order matrices (wk3#D pipeline) view transform = view matrix line 69 scene.html
+// fragment shader = basic difuse lighting, he did all the vertex stuff in the shader
+// change resolution: createPlane in initBuffers
 
 
 var fieldOfView = 1.22173;
