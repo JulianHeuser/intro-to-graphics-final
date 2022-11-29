@@ -61,7 +61,7 @@
         }
 
         float getTerrainHeight(vec2 coord){
-          return cnoise(coord / 12.0) + (.25 * cnoise(coord / 6.0)) + (.125 * cnoise(coord / 3.0));
+          return (5.0 * cnoise(coord / 50.0)) + cnoise(coord / 12.0) + (.25 * cnoise(coord / 6.0)) + (.125 * cnoise(coord / 3.0));
         }
       
         void main(void) {
@@ -69,11 +69,13 @@
           gl_Position = projection * view * vec4(aVertexPosition.xyz, 1.0);
 
           // Calculate normals
-          float L = getTerrainHeight(aVertexPosition.xz + vec2(-.2, 0));
-          float R = getTerrainHeight(aVertexPosition.xz + vec2(.02, 0));
-          float T = getTerrainHeight(aVertexPosition.xz + vec2(0, .02));
-          float B = getTerrainHeight(aVertexPosition.xz + vec2(0, -.02));
-          normal = normalize(vec3(2.0*(R-L), 2.0*(B-T), -4)); //vec3(rand(aVertexPosition.xz), rand(aVertexPosition.xz * 1.2), rand(aVertexPosition.xz * 2.5)); //
+          float step = 0.01;
+
+          float L = getTerrainHeight(aVertexPosition.xz + vec2(-step, 0));
+          float R = getTerrainHeight(aVertexPosition.xz + vec2(step, 0));
+          float T = getTerrainHeight(aVertexPosition.xz + vec2(0, step));
+          float B = getTerrainHeight(aVertexPosition.xz + vec2(0, -step));
+          normal = normalize(vec3(2.0*(R-L), -step*2.0, 2.0*(B-T))); //vec3(rand(aVertexPosition.xz), rand(aVertexPosition.xz * 1.2), rand(aVertexPosition.xz * 2.5)); //
           
           // Random y displacement for terrain
           gl_Position.y += getTerrainHeight(aVertexPosition.xz) * 5.0 - 2.0;
@@ -87,7 +89,7 @@
         #version 300 es
         precision mediump float;
 
-        vec3 lightDir = vec3(0.6, 0.15, -0.3);
+        vec3 lightDir = vec3(0.7, -1.0, -0.15);
 
         in vec3 normal;
 
@@ -100,14 +102,15 @@
 
           vec3 color = vec3(1,1,1);
 
-          fragColor = vec4(color * lightingFactor, 1);
+          fragColor = vec4(color * (lightingFactor), 1);
         }
     </script>
 
     <!-- This is the bulk of the actual WebGL stuff -->
+    <script type="text/javascript" src="terrainGen.js"></script>
+    
     <script type="text/javascript" src="renderer.js"></script>
 
-    <script type="text/javascript" src="terrainGen.js"></script>
 
 </head>
 

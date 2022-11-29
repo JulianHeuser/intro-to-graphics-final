@@ -2,14 +2,9 @@
 
 // Global variables that are set and used
 // across the application
-let gl,
-program,
-points,
-indices
+let gl, program
 
-var myVAO = null;
-var myVertexBuffer = null;
-var myIndexBuffer = null;
+// notes
 // add sphere vertex buffer or struct of vertices and loop through
 // figure out whether to add vertex buffer
 // draw funciton draws every frame
@@ -22,13 +17,15 @@ var myIndexBuffer = null;
 // fragment shader = basic difuse lighting, he did all the vertex stuff in the shader
 // change resolution: createPlane in initBuffers
 
+var terrainGen = new TerrainGen();
 
-var fieldOfView = 1.22173;
+var fieldOfView = 2.094395;
 var nearClippingPlaneDist = 1.0;
 var farClippingPlaneDist = 100.0;
 var aspectRatio = 0.0;
 
 var camPosition = [0,0,-5];
+let camAngle = [0,0,0];
 
 // Given an id, extract the content's of a shader script
 // from the DOM and return the compiled shader
@@ -94,39 +91,28 @@ function initProgram() {
 
     // Set up the buffers
 function initBuffers() {
-    // clear your points and elements
-    let planeData = createPlane(50, 50, -2);
-    points = planeData[0];
-    indices = planeData[1];
 
-    //create and bind VAO
-    if (myVAO == null) myVAO = gl.createVertexArray();
-    gl.bindVertexArray(myVAO);
-    
-    // create and bind vertex buffer
-    if (myVertexBuffer == null) myVertexBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, myVertexBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(points), gl.STATIC_DRAW);
-    gl.enableVertexAttribArray(program.aVertexPosition);
-    gl.vertexAttribPointer(program.aVertexPosition, 3, gl.FLOAT, false, 0, 0);
- 
-    // Setting up the IBO
-    if (myIndexBuffer == null) myIndexBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, myIndexBuffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+    terrainGen.bufferPlaneData(0 , 0);
 
     // Clean
     gl.bindVertexArray(null);
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
-
 }
 
-    // We call draw to render to our canvas
+
+
+// We call draw to render to our canvas
 function draw() {
+    
     // Move camera
-    //camPosition[2] += .1;
-   
+    camPosition[2] += .1;
+    camPosition[0] += .05;
+    const d = new Date();
+    //camAngle[1] = Math.sin(d.getTime() / 5000);
+
+    terrainGen.planeUpdate(camPosition[0], camPosition[2]);
+
     // uniform values
     let verticalFOV = fieldOfView * (aspectRatio);
     let projectionMat4 =[
@@ -137,12 +123,12 @@ function draw() {
     ];
     gl.uniformMatrix4fv(program.projection, false, new Float32Array(projectionMat4));
 
-    let lookAngle = 0;
+    // Rotation + transformation matrix
     let viewMat4 = [
-        1,0,0,0,
-        0,1,0,0,
-        0,0,1,0,
-        camPosition[0],camPosition[1],camPosition[2],1
+        Math.cos(camAngle[1]), 0, -Math.sin(camAngle[1]), 0,
+        0, 1, 0, 0,
+        Math.sin(camAngle[1]), 0, Math.cos(camAngle[1]), 0,
+        camPosition[0], camPosition[1], camPosition[2], 1
     ]
     gl.uniformMatrix4fv(program.view, false, new Float32Array(viewMat4));
     
@@ -152,11 +138,10 @@ function draw() {
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
     // Bind the VAO
-    gl.bindVertexArray(myVAO);
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, myIndexBuffer);
+    terrainGen.bindPlaneData();
 
     // Draw to the scene using triangle primitives
-    gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
+    gl.drawElements(gl.TRIANGLES, terrainGen.indices.length, gl.UNSIGNED_SHORT, 0);
 
     // Clean
     gl.bindVertexArray(null);
