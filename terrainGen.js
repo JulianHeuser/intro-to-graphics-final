@@ -7,7 +7,7 @@ class TerrainGen{
     indexBuffer = null;
 
 
-    planeHeight = -5;
+    planeHeight = -15;
 
     currentOrigin = [0 ,0]
 

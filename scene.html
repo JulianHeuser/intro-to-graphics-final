@@ -61,7 +61,7 @@
         }
 
         float getTerrainHeight(vec2 coord){
-          return cnoise(coord / 12.0) + (.25 * cnoise(coord / 6.0)) + (.125 * cnoise(coord / 3.0));
+          return (5.0 * cnoise(coord / 50.0)) + cnoise(coord / 12.0) + (.25 * cnoise(coord / 6.0)) + (.125 * cnoise(coord / 3.0));
         }
       
         void main(void) {
