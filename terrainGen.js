@@ -10,27 +10,29 @@ class TerrainGen{
 
     planeHeight = -15;
 
-    currentOrigin = [0 ,0]
+    currentOrigin = [0, 0]
+
+    subdivisions = 100
+
+    size = 500
 
     constructor(){}
 
-    createPlane(subdivisions, size){
-        let dist = size/subdivisions;
+    createPlane(){
+        let dist = this.size/this.subdivisions;
 
         let currentIndex = 0;
-
-        let lod = 0;
 
         this.vertices = [];
         this.indices = [];
         
-        for(let i = 0; i < subdivisions; i++){
-            for(let j = 0; j < subdivisions; j++){
+        for(let i = 0; i < this.subdivisions; i++){
+            for(let j = 0; j < this.subdivisions; j++){
                 
                 // Get relative offsets
-                let x0 = this.currentOrigin[0] - (size/2) + (dist * i);
+                let x0 = this.currentOrigin[0] - (this.size/2) + (dist * i);
                 let x1 = x0 + dist;
-                let z0 = this.currentOrigin[1] - (size/2) + (dist * j);
+                let z0 = this.currentOrigin[1] - (this.size/2) + (dist * j);
                 let z1 = z0 + dist;
                 
                 // Triangle configurations for one quad
@@ -47,7 +49,7 @@ class TerrainGen{
         this.currentOrigin = [x, z];
 
         // create points and indices
-        this.createPlane(100, 100);
+        this.createPlane();
 
         // create and bind vertex buffer
         this.vertexBuffer = gl.createBuffer();
@@ -68,8 +70,9 @@ class TerrainGen{
 
     planeUpdate(x, z){
 
-        x = -Math.floor(x);
-        z = -Math.floor(z);
+        let factor = (this.size/this.subdivisions)
+        x = -Math.floor(x / factor) * factor;
+        z = -Math.floor(z / factor) * factor;
         
         if (this.dist(x, z, this.currentOrigin[0], this.currentOrigin[1]) < 10){
             return;
