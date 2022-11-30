@@ -4,7 +4,9 @@
 // across the application
 let gl
 
+// set sphere and terrain
 var terrainGen = new TerrainGen();
+var sphere = new Sphere();
 
 var fieldOfView = 2.094395;
 var nearClippingPlaneDist = 1.0;
@@ -48,15 +50,12 @@ function getShader(id) {
 // Create a program with the appropriate vertex and fragment shaders
 function initProgram() {
 
+    /* terrain */
     const vertexShaderTerrain = getShader('vertex-shader-terrain');
     const fragmentShaderTerrain = getShader('fragment-shader-terrain');
 
-    // Create a program FOR SHADER
-    //program = gl.createProgram();
-
-    // Create a program
+    // Create a program for terrain shader
     terrainGen.program = gl.createProgram();
-
 
     // Attach the shaders to this program
     gl.attachShader(terrainGen.program, vertexShaderTerrain);
@@ -65,7 +64,7 @@ function initProgram() {
     gl.linkProgram(terrainGen.program);
 
     if (!gl.getProgramParameter(terrainGen.program, gl.LINK_STATUS)) {
-        console.error('Could not initialize shaders');
+        console.error('Could not initialize terrain shaders');
     }
 
     // We attach the location of these shader values to the program instance
@@ -74,12 +73,37 @@ function initProgram() {
     terrainGen.program.projection = gl.getUniformLocation (terrainGen.program, 'projection');
     terrainGen.program.view = gl.getUniformLocation (terrainGen.program, 'view');
 
+    /* sphere */
+    const vertexShaderSphere = getShader('vertex-shader-sphere');
+    const fragmentShaderSphere = getShader('fragment-shader-sphere');
+
+    // create program for sphere shaders
+    sphere.program = gl.createProgram();
+
+    // attach shaders to this program
+    gl.attachShader(sphere.program, vertexShaderSphere);
+    gl.attachShader(sphere.program, fragmentShaderSphere);
+
+    gl.linkProgram(sphere.program);
+
+    if (!gl.getProgramParameter(sphere.program, gl.LINK_STATUS)) {
+        console.error('Could not initialize sphere shaders');
+    }
+
+    // We attach the location of these shader values to the program instance
+    // for easy access later in the code
+    sphere.program.aVertexPosition = gl.getAttribLocation(sphere.program, 'aVertexPosition');
+    sphere.program.projection = gl.getUniformLocation (sphere.program, 'projection');
+    sphere.program.view = gl.getUniformLocation (sphere.program, 'view');
+
+
 }
 
     // Set up the buffers
 function initBuffers() {
 
     terrainGen.bufferPlaneData(0 , 0);
+    sphere.bufferSphereData(0, 0);
 
     // Clean
     gl.bindVertexArray(null);
@@ -88,15 +112,14 @@ function initBuffers() {
 }
 
 
-
 // We call draw to render to our canvas
 function draw() {
     
     gl.useProgram(terrainGen.program);
 
     // Move camera
-    camPosition[2] += .1;
-    camPosition[0] += .05;
+    //camPosition[2] += .1;
+    //camPosition[0] += .05;
     const d = new Date();
     //camAngle[1] = Math.sin(d.getTime() / 5000);
 
@@ -104,6 +127,7 @@ function draw() {
 
     // uniform values
     let verticalFOV = fieldOfView * (aspectRatio);
+    // makes closer objs bigger
     let projectionMat4 =[
         Math.atan(fieldOfView/2.0), 0, 0, 0,
         0, Math.atan(verticalFOV), 0, 0,
@@ -112,7 +136,7 @@ function draw() {
     ];
     gl.uniformMatrix4fv(terrainGen.program.projection, false, new Float32Array(projectionMat4));
 
-    // Rotation + transformation matrix
+    // Rotation + transformation matrix (transforming (translation) for the camera)
     let viewMat4 = [
         Math.cos(camAngle[1]), 0, -Math.sin(camAngle[1]), 0,
         0, 1, 0, 0,
@@ -121,7 +145,6 @@ function draw() {
     ]
     gl.uniformMatrix4fv(terrainGen.program.view, false, new Float32Array(viewMat4));
     
-
     // Clear the scene // DONT DO THIS!
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
@@ -132,6 +155,15 @@ function draw() {
     // Draw to the scene using triangle primitives
     gl.drawElements(gl.TRIANGLES, terrainGen.indices.length, gl.UNSIGNED_SHORT, 0);
 
+    /* sphere */    
+    gl.useProgram(sphere.program);
+
+    gl.uniformMatrix4fv(sphere.program.projection, false, new Float32Array(projectionMat4));
+
+    gl.uniformMatrix4fv(sphere.program.view, false, new Float32Array(viewMat4));
+
+    // bind buffer
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphere.sphereIndexBuffer);
 
     // Clean
     gl.bindVertexArray(null);
@@ -142,7 +174,6 @@ function draw() {
 // Entry point to our application
 function init() {
    
-
     // Retrieve the canvas
     const canvas = document.getElementById('webgl-canvas');
     if (!canvas) {

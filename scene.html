@@ -84,6 +84,23 @@
 
     </script>
 
+    <!-- sphere vertex shader -->
+    <script id= "vertex-shader-sphere" type="x-shader/x-vertex"> 
+    
+      #version 300 es
+
+        // Supplied vertex position attribute
+        in vec4 aVertexPosition;
+        uniform mat4 projection;
+        uniform mat4 view;
+
+      void main(void) {
+        // Apply Projection and view matrices
+        gl_Position = projection * view * vec4(aVertexPosition.xyz, 1.0);
+
+      }
+    </script>
+
     <!-- fragment Shader -->
     <script id="fragment-shader-terrain" type="x-shader/x-fragment">
         #version 300 es
@@ -106,11 +123,34 @@
         }
     </script>
 
+    <!-- sphere fragment shader-->
+    <script id="fragment-shader-sphere" type="x-shader/x-fragment">
+      #version 300 es
+      precision mediump float;
+
+      //vec3 lightDir = vec3(0.7, -1.0, -0.15);
+
+      //in vec3 normal;
+
+      // Color that is the result of this shader
+      out vec4 fragColor;
+
+      void main(void) {
+        // Add lighting
+        // float lightingFactor = dot(normal.xyz, normalize(lightDir));
+
+        vec3 color = vec3(0.11,0.23,1.00);
+
+        fragColor = vec4(color, 1);
+      }
+  </script>
+
     <!-- This is the bulk of the actual WebGL stuff -->
     <script type="text/javascript" src="terrainGen.js"></script>
     
-    <script type="text/javascript" src="renderer.js"></script>
+    <script type="text/javascript" src="sphere.js"></script>
 
+    <script type="text/javascript" src="renderer.js"></script>
 
 </head>
 
