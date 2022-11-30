@@ -2,7 +2,7 @@
 
 // Global variables that are set and used
 // across the application
-let gl, program
+let gl
 
 var terrainGen = new TerrainGen();
 
@@ -48,31 +48,31 @@ function getShader(id) {
 // Create a program with the appropriate vertex and fragment shaders
 function initProgram() {
 
-    const vertexShader = getShader('vertex-shader');
-    const fragmentShader = getShader('fragment-shader');
+    const vertexShaderTerrain = getShader('vertex-shader-terrain');
+    const fragmentShaderTerrain = getShader('fragment-shader-terrain');
 
     // Create a program FOR SHADER
-    program = gl.createProgram();
+    //program = gl.createProgram();
+
+    // Create a program
+    terrainGen.program = gl.createProgram();
+
 
     // Attach the shaders to this program
-    gl.attachShader(program, vertexShader);
-    gl.attachShader(program, fragmentShader);
+    gl.attachShader(terrainGen.program, vertexShaderTerrain);
+    gl.attachShader(terrainGen.program, fragmentShaderTerrain);
 
-    gl.linkProgram(program);
+    gl.linkProgram(terrainGen.program);
 
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+    if (!gl.getProgramParameter(terrainGen.program, gl.LINK_STATUS)) {
         console.error('Could not initialize shaders');
     }
 
-
-    // Use this program instance
-    gl.useProgram(program);
-
     // We attach the location of these shader values to the program instance
     // for easy access later in the code
-    program.aVertexPosition = gl.getAttribLocation(program, 'aVertexPosition');
-    program.projection = gl.getUniformLocation (program, 'projection');
-    program.view = gl.getUniformLocation (program, 'view');
+    terrainGen.program.aVertexPosition = gl.getAttribLocation(terrainGen.program, 'aVertexPosition');
+    terrainGen.program.projection = gl.getUniformLocation (terrainGen.program, 'projection');
+    terrainGen.program.view = gl.getUniformLocation (terrainGen.program, 'view');
 
 }
 
@@ -92,6 +92,8 @@ function initBuffers() {
 // We call draw to render to our canvas
 function draw() {
     
+    gl.useProgram(terrainGen.program);
+
     // Move camera
     camPosition[2] += .1;
     camPosition[0] += .05;
@@ -108,7 +110,7 @@ function draw() {
         0, 0, ((farClippingPlaneDist+nearClippingPlaneDist)/(farClippingPlaneDist-nearClippingPlaneDist)),-((2.0*(nearClippingPlaneDist*farClippingPlaneDist))/(farClippingPlaneDist-nearClippingPlaneDist)),
         0, 0, -1, 0
     ];
-    gl.uniformMatrix4fv(program.projection, false, new Float32Array(projectionMat4));
+    gl.uniformMatrix4fv(terrainGen.program.projection, false, new Float32Array(projectionMat4));
 
     // Rotation + transformation matrix
     let viewMat4 = [
@@ -117,7 +119,7 @@ function draw() {
         Math.sin(camAngle[1]), 0, Math.cos(camAngle[1]), 0,
         camPosition[0], camPosition[1], camPosition[2], 1
     ]
-    gl.uniformMatrix4fv(program.view, false, new Float32Array(viewMat4));
+    gl.uniformMatrix4fv(terrainGen.program.view, false, new Float32Array(viewMat4));
     
 
     // Clear the scene // DONT DO THIS!
@@ -129,6 +131,7 @@ function draw() {
 
     // Draw to the scene using triangle primitives
     gl.drawElements(gl.TRIANGLES, terrainGen.indices.length, gl.UNSIGNED_SHORT, 0);
+
 
     // Clean
     gl.bindVertexArray(null);
