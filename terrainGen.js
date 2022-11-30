@@ -6,6 +6,7 @@ class TerrainGen{
     vertexBuffer = null;
     indexBuffer = null;
 
+    program;
 
     planeHeight = -15;
 
@@ -52,8 +53,8 @@ class TerrainGen{
         this.vertexBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.DYNAMIC_DRAW);
-        gl.enableVertexAttribArray(program.aVertexPosition);
-        gl.vertexAttribPointer(program.aVertexPosition, 3, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(this.program.aVertexPosition);
+        gl.vertexAttribPointer(this.program.aVertexPosition, 3, gl.FLOAT, false, 0, 0);
 
         // Setting up the IBO
         if (this.indexBuffer == null) this.indexBuffer = gl.createBuffer();
