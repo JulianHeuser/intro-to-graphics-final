@@ -4,19 +4,6 @@
 // across the application
 let gl, program
 
-// notes
-// add sphere vertex buffer or struct of vertices and loop through
-// figure out whether to add vertex buffer
-// draw funciton draws every frame
-// uniform values get sent to the shader
-// projection view matrix in scene.html
-// change near clipping plane number because things are getting to close to the camera
-// field of view = high
-// i should use the projection and view matrix in draw( ) in render.js so that the sphere will move too
-// add another matrix for object movement (model coordinates) in column order matrices (wk3#D pipeline) view transform = view matrix line 69 scene.html
-// fragment shader = basic difuse lighting, he did all the vertex stuff in the shader
-// change resolution: createPlane in initBuffers
-
 var terrainGen = new TerrainGen();
 
 var fieldOfView = 2.094395;
@@ -64,7 +51,7 @@ function initProgram() {
     const vertexShader = getShader('vertex-shader');
     const fragmentShader = getShader('fragment-shader');
 
-    // Create a program
+    // Create a program FOR SHADER
     program = gl.createProgram();
 
     // Attach the shaders to this program
@@ -133,7 +120,7 @@ function draw() {
     gl.uniformMatrix4fv(program.view, false, new Float32Array(viewMat4));
     
 
-    // Clear the scene
+    // Clear the scene // DONT DO THIS!
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
