@@ -47,12 +47,16 @@ class Sphere{
                 // going from 0 to 360
                 theta = i * sliceSize;
                 // starting at PI/2, going to -PI/2
-                phi = j * stackSize / 2;
+                phi = j * stackSize;
 
                 // spherical --> cartesian coords
                 x = radius * Math.cos(theta) * Math.sin(phi);
                 y = radius * Math.sin(theta) * Math.sin(phi);
                 z = radius * Math.cos(phi);
+
+                // x = radius * Math.cos(theta) * Math.cos(phi);
+                // y = radius * Math.cos(phi) * Math.sin(theta);
+                // z = radius * Math.sin(phi);
 
                 // console.log("i: " + i + " j: " + j + " theta: " + theta + " phi: " + phi + " x: " + x + " y: " + y + " z: " + z);
                 points[i][j] = [x,y,z];
@@ -69,6 +73,7 @@ class Sphere{
                 let p3 = points[i+1][j];
                 // console.log("p0: " + p0 + " p1: " + p1 + " p2: " + p2 + " p3: " + p3);
 
+                // make sure to draw ccw
                 this.sphereBuffer(p0[0], p0[1], p0[2], p2[0], p2[1], p2[2], p1[0], p1[1], p1[2]);
                 this.sphereBuffer(p0[0], p0[1], p0[2], p3[0], p3[1], p3[2], p2[0], p2[1], p2[2]);
             }
