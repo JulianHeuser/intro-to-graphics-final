@@ -85,10 +85,11 @@ function initProgram() {
     gl.attachShader(sphere.program, fragmentShaderSphere);
 
     gl.linkProgram(sphere.program);
-
+    
     if (!gl.getProgramParameter(sphere.program, gl.LINK_STATUS)) {
         console.error('Could not initialize sphere shaders');
     }
+    
 
     // We attach the location of these shader values to the program instance
     // for easy access later in the code
@@ -115,17 +116,15 @@ function initBuffers() {
 // We call draw to render to our canvas
 function draw() {
     
-    gl.useProgram(terrainGen.program);
 
     // Move camera
     //camPosition[2] += .1;
     //camPosition[0] += .05;
-    const d = new Date();
+    //const d = new Date();
     //camAngle[1] = Math.sin(d.getTime() / 5000);
 
-    terrainGen.planeUpdate(camPosition[0], camPosition[2]);
 
-    // uniform values
+    // Calculate matrices
     let verticalFOV = fieldOfView * (aspectRatio);
     // makes closer objs bigger
     let projectionMat4 =[
@@ -134,7 +133,6 @@ function draw() {
         0, 0, ((farClippingPlaneDist+nearClippingPlaneDist)/(farClippingPlaneDist-nearClippingPlaneDist)),-((2.0*(nearClippingPlaneDist*farClippingPlaneDist))/(farClippingPlaneDist-nearClippingPlaneDist)),
         0, 0, -1, 0
     ];
-    gl.uniformMatrix4fv(terrainGen.program.projection, false, new Float32Array(projectionMat4));
 
     // Rotation + transformation matrix (transforming (translation) for the camera)
     let viewMat4 = [
@@ -143,29 +141,40 @@ function draw() {
         Math.sin(camAngle[1]), 0, Math.cos(camAngle[1]), 0,
         camPosition[0], camPosition[1], camPosition[2], 1
     ]
-    gl.uniformMatrix4fv(terrainGen.program.view, false, new Float32Array(viewMat4));
-
-    // Bind the VAO
-    terrainGen.bindPlaneData();
 
     // Clear the scene
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
+    /* DRAW TERRAIN */
+    gl.useProgram(terrainGen.program);
+    terrainGen.planeUpdate(camPosition[0], camPosition[2]);
+    gl.uniformMatrix4fv(terrainGen.program.view, false, new Float32Array(viewMat4));
+    gl.uniformMatrix4fv(terrainGen.program.projection, false, new Float32Array(projectionMat4));
+
+    // Bind the VAO
+    terrainGen.bindPlaneData();
+
     // Draw to the scene using triangle primitives
     gl.drawElements(gl.TRIANGLES, terrainGen.indices.length, gl.UNSIGNED_SHORT, 0);
 
-    /* sphere */    
-    gl.useProgram(sphere.program);
+    gl.bindVertexArray(null);
+    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
 
+    /* DRAW SPHERE */    
+    gl.useProgram(sphere.program);
+    
     gl.uniformMatrix4fv(sphere.program.projection, false, new Float32Array(projectionMat4));
 
     gl.uniformMatrix4fv(sphere.program.view, false, new Float32Array(viewMat4));
 
     // bind buffer
+    gl.enableVertexAttribArray(sphere.program.aVertexPosition);
+    gl.bindBuffer(gl.ARRAY_BUFFER, sphere.vertexBuffer);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphere.sphereIndexBuffer);
 
-    // draw elements
+
     gl.drawElements(gl.TRIANGLES, sphere.indices.length, gl.UNSIGNED_SHORT, 0);
 
     // Clean

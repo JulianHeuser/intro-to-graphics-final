@@ -63,6 +63,8 @@ class TerrainGen{
     }
 
     bindPlaneData(){
+        gl.enableVertexAttribArray(this.program.aVertexPosition);
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
     }
 

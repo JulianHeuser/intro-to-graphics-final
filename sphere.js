@@ -23,6 +23,9 @@ class Sphere{
     * code based on Julian's implementation of the sphere
     */
     makeSphere(slices, stacks){
+        this.vertices = [];
+        this.indices = [];
+
 
         let radius = 0.5;
         let sliceSize = (Math.PI * 2) / slices;
