@@ -28,17 +28,17 @@ class Sphere{
         this.vertices = [];
         this.indices = [];
 
-
         let radius = 0.5;
         let sliceSize = (Math.PI * 2) / slices;
         let stackSize = (Math.PI * 2) / stacks;
         // console.log("sliceSize: " + sliceSize + " stackSize: " + stackSize);
 
         // 2D array for vertex points
-        let points = Array.from(Array(slices + 1), ()=> Array(stacks + 1));
+        let points = Array.from(Array(slices + 4), ()=> Array(stacks + 4));
         let x, y, z, theta, phi;
 
         // create every single point on the squere
+        // plus one duplicates the last point
         for(let i = 0; i < slices + 1; i++){
   
             // the first and last vertices have the same position and normal, but diff tex coordinates
@@ -69,10 +69,23 @@ class Sphere{
                 let p3 = points[i+1][j];
                 // console.log("p0: " + p0 + " p1: " + p1 + " p2: " + p2 + " p3: " + p3);
 
-                this.sphereBuffer(p0[0], p0[1], p0[2], p1[0], p1[1], p1[2], p2[0], p2[1], p2[2]);
-                this.sphereBuffer(p0[0], p0[1], p0[2], p2[0], p2[1], p2[2], p3[0], p3[1], p3[2]);
+                this.sphereBuffer(p0[0], p0[1], p0[2], p2[0], p2[1], p2[2], p1[0], p1[1], p1[2]);
+                this.sphereBuffer(p0[0], p0[1], p0[2], p3[0], p3[1], p3[2], p2[0], p2[1], p2[2]);
             }
         }
+
+        // debugging
+        // for(let j = 0; j < stacks; j++){
+
+        //     let p0 = points[8][j];
+        //     let p1 = points[8][j+1];
+        //     let p2 = points[8+1][j+1];
+        //     let p3 = points[8+1][j];
+        //     // console.log("p0: " + p0 + " p1: " + p1 + " p2: " + p2 + " p3: " + p3);
+
+        //     this.sphereBuffer(p0[0], p0[1], p0[2], p1[0], p1[1], p1[2], p2[0], p2[1], p2[2]);
+        //     this.sphereBuffer(p0[0], p0[1], p0[2], p2[0], p2[1], p2[2], p3[0], p3[1], p3[2]);
+        // }
     }
 
     sphereBuffer(x0,y0,z0,x1,y1,z1,x2,y2,z2){
