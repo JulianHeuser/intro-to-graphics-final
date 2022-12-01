@@ -69,6 +69,7 @@
           gl_Position = projection * view * vec4(aVertexPosition.xyz, 1.0);
 
           // Calculate normals
+          // Algorithm from https://stackoverflow.com/questions/49640250/calculate-normals-from-heightmap
           float step = 0.01;
 
           float L = getTerrainHeight(aVertexPosition.xz + vec2(-step, 0));
