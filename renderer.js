@@ -165,6 +165,7 @@ function draw() {
     // bind buffer
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphere.sphereIndexBuffer);
 
+    gl.drawElements(gl.TRIANGLES, sphere.indices.length, gl.UNSIGNED_SHORT, 0);
     // Clean
     gl.bindVertexArray(null);
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
