@@ -104,6 +104,11 @@ function initProgram() {
 function initBuffers() {
 
     terrainGen.bufferPlaneData(0 , 0);
+
+    gl.bindVertexArray(null);
+    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+
     sphere.bufferSphereData(0, 0);
 
     // Clean
@@ -124,7 +129,7 @@ function draw() {
     //camAngle[1] = Math.sin(d.getTime() / 5000);
 
 
-    // Calculate matrices
+    /* Calculate values to send to shaders */
     let verticalFOV = fieldOfView * (aspectRatio);
     // makes closer objs bigger
     let projectionMat4 =[
@@ -142,42 +147,42 @@ function draw() {
         camPosition[0], camPosition[1], camPosition[2], 1
     ]
 
-    // Clear the scene
+    /* Clear the scene */
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
     /* DRAW TERRAIN */
     gl.useProgram(terrainGen.program);
     terrainGen.planeUpdate(camPosition[0], camPosition[2]);
+
+    // Set uniforms
     gl.uniformMatrix4fv(terrainGen.program.view, false, new Float32Array(viewMat4));
     gl.uniformMatrix4fv(terrainGen.program.projection, false, new Float32Array(projectionMat4));
 
-    // Bind the VAO
-    terrainGen.bindPlaneData();
+    // Bind buffers
+    gl.bindBuffer(gl.ARRAY_BUFFER, terrainGen.vertexBuffer);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, terrainGen.indexBuffer);
+    gl.vertexAttribPointer(terrainGen.program.aVertexPosition, 3, gl.FLOAT, false, 0, 0);
 
     // Draw to the scene using triangle primitives
     gl.drawElements(gl.TRIANGLES, terrainGen.indices.length, gl.UNSIGNED_SHORT, 0);
 
-    gl.bindVertexArray(null);
-    gl.bindBuffer(gl.ARRAY_BUFFER, null);
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
-
     /* DRAW SPHERE */    
     gl.useProgram(sphere.program);
     
+    // Set uniforms
     gl.uniformMatrix4fv(sphere.program.projection, false, new Float32Array(projectionMat4));
-
     gl.uniformMatrix4fv(sphere.program.view, false, new Float32Array(viewMat4));
 
-    // bind buffer
-    gl.enableVertexAttribArray(sphere.program.aVertexPosition);
+    // bind buffers
     gl.bindBuffer(gl.ARRAY_BUFFER, sphere.vertexBuffer);
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphere.sphereIndexBuffer);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphere.indexBuffer);
+    gl.vertexAttribPointer(sphere.program.aVertexPosition, 3, gl.FLOAT, false, 0, 0);
 
-
+    // Draw to the scene using triangle primitives
     gl.drawElements(gl.TRIANGLES, sphere.indices.length, gl.UNSIGNED_SHORT, 0);
 
-    // Clean
+    /* Clean */
     gl.bindVertexArray(null);
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);

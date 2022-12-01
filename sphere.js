@@ -12,7 +12,9 @@ class Sphere{
     vertices = [];
 
     vertexBuffer = null;
-    sphereIndexBuffer = null;
+    indexBuffer = null;
+
+    program;
 
     constructor(){}
 
@@ -117,8 +119,8 @@ class Sphere{
         gl.vertexAttribPointer(this.program.aVertexPosition, 3, gl.FLOAT, false, 0, 0);
 
         // Setting up the IBO
-        if (this.sphereIndexBuffer == null) this.sphereIndexBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.sphereIndexBuffer);
+        if (this.indexBuffer == null) this.indexBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.indices), gl.DYNAMIC_DRAW);
     }
 }
