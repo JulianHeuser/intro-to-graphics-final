@@ -13,7 +13,7 @@ var nearClippingPlaneDist = 1.0;
 var farClippingPlaneDist = 100.0;
 var aspectRatio = 0.0;
 
-var camPosition = [0,0,-5];
+var camPosition = [0,-3,-5];
 let camAngle = [0,0,0];
 
 // Given an id, extract the content's of a shader script
@@ -132,7 +132,7 @@ function draw() {
     const d = new Date();
     //camAngle[1] += .01;
 
-    camAngle[1] = Math.sin(d.getTime() / 5000);
+    camAngle[1] = (Math.sin(d.getTime() / 5000) / 2);
 
 
     /* Calculate values to send to shaders */
