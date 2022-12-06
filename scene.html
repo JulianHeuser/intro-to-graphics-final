@@ -74,6 +74,9 @@
           vec4 vertexPos = aVertexPosition;
           vertexPos.y += getTerrainHeight(aVertexPosition.xz) * 5.0 - 2.0;
 
+          // Apply Projection and view matrices
+          gl_Position = projection * viewRot * view * vec4(vertexPos.xyz, 1.0);
+
           // Calculate normals
           // Algorithm from https://stackoverflow.com/questions/49640250/calculate-normals-from-heightmap
           float step = 0.01;
@@ -89,8 +92,6 @@
           float repeatSize = 5.0;
           color = mix(colorA, colorB, clamp(heightFactor, 0.0, 1.0)) * mod(vertexPos.y, repeatSize) / repeatSize;
 
-          // Apply Projection and view matrices
-          gl_Position = projection * viewRot * view * vec4(vertexPos.xyz, 1.0);
 
         }
 
@@ -114,8 +115,11 @@
         // Apply Projection and view matrices0
         gl_Position = projection * viewRot * view * vec4(aVertexPosition.xyz, 1.0);
 
+        // Calculate normal
         normal = normalize(vec3(aVertexPosition.xyz));
         float uvFactor = 0.5;
+
+        // Calculate "UV"
         UV = vec2(mod(aVertexPosition.x, uvFactor) / uvFactor, mod(aVertexPosition.y, uvFactor) / uvFactor);
       }
     </script>

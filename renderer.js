@@ -158,7 +158,7 @@ function draw() {
         0, 0, 0, 1
     ]
 
-    // Rotation + transformation matrix (transforming (translation) for the camera)
+    // Translation matrix for the camera
     let cameraViewMat4 = [
         1, 0, 0, 0,
         0, 1, 0, 0,
@@ -166,7 +166,7 @@ function draw() {
         camPosition[0], camPosition[1], camPosition[2], 1
     ]
 
-    // Rotation + transformation matrix (transforming (translation) for the camera)
+    // Translation matrix for the sphere
     let sphereViewMat4 = [
         1, 0, 0, 0,
         0, 1, 0, 0,
@@ -201,9 +201,9 @@ function draw() {
     // should buffer sphere data be called here?
     
     // Set uniforms
+    gl.uniformMatrix4fv(sphere.program.viewRot, false, new Float32Array(cameraRotMat4));
     gl.uniformMatrix4fv(sphere.program.view, false, new Float32Array(sphereViewMat4));
     gl.uniformMatrix4fv(sphere.program.projection, false, new Float32Array(projectionMat4));
-    gl.uniformMatrix4fv(sphere.program.viewRot, false, new Float32Array(cameraRotMat4));
 
     // bind buffers
     gl.bindBuffer(gl.ARRAY_BUFFER, sphere.vertexBuffer);
