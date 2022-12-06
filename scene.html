@@ -82,7 +82,7 @@
           normal = normalize(vec3(2.0*(R-L), -step*2.0, 2.0*(B-T))); //vec3(rand(aVertexPosition.xz), rand(aVertexPosition.xz * 1.2), rand(aVertexPosition.xz * 2.5)); //
           
           float uvFactor = 5.0;
-          UV = vec2(mod(vertexPos.x, uvFactor) / uvFactor, mod(vertexPos.y, uvFactor) / uvFactor));
+          UV = vec2(mod(vertexPos.x, uvFactor) / uvFactor, mod(vertexPos.y, uvFactor) / uvFactor);
 
           // Apply Projection and view matrices
           gl_Position = projection * viewRot * view * vec4(vertexPos.xyz, 1.0);
@@ -138,7 +138,7 @@
       #version 300 es
       precision mediump float;
 
-      vec3 lightDir = vec3(0.7, -1.0, -0.15);
+      vec3 lightDir = vec3(0.7, -1.0, 2);
 
       in vec3 normal;
 

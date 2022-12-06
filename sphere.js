@@ -3,8 +3,6 @@
  *
  */
 
-// need vertex buffers for sphere
-
 class Sphere{
 
     // keep track of indices to reuse what you have vs recreating points
@@ -34,7 +32,7 @@ class Sphere{
         // console.log("sliceSize: " + sliceSize + " stackSize: " + stackSize);
 
         // 2D array for vertex points
-        let points = Array.from(Array(slices + 4), ()=> Array(stacks + 4));
+        let points = Array.from(Array(slices + 2), ()=> Array(stacks + 2));
         let x, y, z, theta, phi;
 
         // create every single point on the squere
@@ -45,7 +43,7 @@ class Sphere{
             for(let j = 0; j < stacks + 1; j++){
 
                 // going from 0 to 360
-                theta = i * sliceSize;
+                theta = i * sliceSize *2;
                 // starting at PI/2, going to -PI/2
                 phi = j * stackSize;
 
