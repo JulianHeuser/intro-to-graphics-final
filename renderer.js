@@ -143,10 +143,18 @@ function draw() {
     ];
 
     // Rotation + transformation matrix (transforming (translation) for the camera)
-    let viewMat4 = [
-        Math.cos(camAngle[1]), 0, -Math.sin(camAngle[1]), 0,
+    let cameraViewMat4 = [
+        1, 0, 0, 0,
         0, 1, 0, 0,
-        Math.sin(camAngle[1]), 0, Math.cos(camAngle[1]), 0,
+        0, 0, 1, 0,
+        camPosition[0], camPosition[1], camPosition[2], 1
+    ]
+
+    // Rotation + transformation matrix (transforming (translation) for the camera)
+    let sphereViewMat4 = [
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
         camPosition[0], camPosition[1], camPosition[2], 1
     ]
 
@@ -159,7 +167,7 @@ function draw() {
     terrainGen.planeUpdate(camPosition[0], camPosition[2]);
 
     // Set uniforms
-    gl.uniformMatrix4fv(terrainGen.program.view, false, new Float32Array(viewMat4));
+    gl.uniformMatrix4fv(terrainGen.program.view, false, new Float32Array(cameraViewMat4));
     gl.uniformMatrix4fv(terrainGen.program.projection, false, new Float32Array(projectionMat4));
 
     // Bind buffers
@@ -177,7 +185,7 @@ function draw() {
     
     // Set uniforms
     gl.uniformMatrix4fv(sphere.program.projection, false, new Float32Array(projectionMat4));
-    gl.uniformMatrix4fv(sphere.program.view, false, new Float32Array(viewMat4));
+    gl.uniformMatrix4fv(sphere.program.view, false, new Float32Array(sphereViewMat4));
 
     // bind buffers
     gl.bindBuffer(gl.ARRAY_BUFFER, sphere.vertexBuffer);
