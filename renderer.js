@@ -127,7 +127,7 @@ function draw() {
     camPosition[2] += .1;
     camPosition[0] += .05;
     // move camera closer
-    //camPosition[0] = -2;
+    camPosition[1] = -3;
     //camPosition[2] = -2;
     const d = new Date();
     //camAngle[1] += .01;
