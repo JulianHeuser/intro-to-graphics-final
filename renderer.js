@@ -242,7 +242,7 @@ function init() {
     
     gl.cullFace(gl.BACK);
     gl.frontFace(gl.CCW);
-    gl.clearColor(0.0,0.0,0.0,1.0)
+    gl.clearColor(0.756862745,0.639215686,0.760784314,1.0)
     gl.depthFunc(gl.LEQUAL)
     gl.clearDepth(1.0)
 
