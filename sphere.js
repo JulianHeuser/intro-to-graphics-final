@@ -54,10 +54,6 @@ class Sphere{
                 y = radius * Math.sin(theta) * Math.sin(phi);
                 z = radius * Math.cos(phi);
 
-                // x = radius * Math.cos(theta) * Math.cos(phi);
-                // y = radius * Math.cos(phi) * Math.sin(theta);
-                // z = radius * Math.sin(phi);
-
                 // console.log("i: " + i + " j: " + j + " theta: " + theta + " phi: " + phi + " x: " + x + " y: " + y + " z: " + z);
                 points[i][j] = [x,y,z];
             }
@@ -127,7 +123,7 @@ class Sphere{
         this.currentOrigin = [x, z];
 
         // create points and indices
-        this.makeSphere(10, 10); 
+        this.makeSphere(100, 100); 
 
         // create and bind vertex buffer
         this.vertexBuffer = gl.createBuffer();
