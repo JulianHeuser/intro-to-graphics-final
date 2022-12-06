@@ -72,6 +72,7 @@ function initProgram() {
     terrainGen.program.aVertexPosition = gl.getAttribLocation(terrainGen.program, 'aVertexPosition');
     terrainGen.program.projection = gl.getUniformLocation (terrainGen.program, 'projection');
     terrainGen.program.view = gl.getUniformLocation (terrainGen.program, 'view');
+    terrainGen.program.viewRot = gl.getUniformLocation (terrainGen.program, 'viewRot');
 
     /* sphere */
     const vertexShaderSphere = getShader('vertex-shader-sphere');
@@ -129,6 +130,8 @@ function draw() {
     //camPosition[0] = -2;
     //camPosition[2] = -2;
     const d = new Date();
+    camAngle[2] += .01;
+
     //camAngle[1] = Math.sin(d.getTime() / 5000);
 
 
@@ -141,6 +144,18 @@ function draw() {
         0, 0, ((farClippingPlaneDist+nearClippingPlaneDist)/(farClippingPlaneDist-nearClippingPlaneDist)),-((2.0*(nearClippingPlaneDist*farClippingPlaneDist))/(farClippingPlaneDist-nearClippingPlaneDist)),
         0, 0, -1, 0
     ];
+
+    // Rotation matrix
+    let gamma = camAngle[0];
+    let beta = camAngle[1];
+    let alpha = camAngle[2];
+
+    let cameraRotMat4 = [
+        Math.cos(alpha) * Math.cos(beta),                                                       Math.sin(alpha) * Math.cos(beta),                                                       -Math.sin(beta),                   0,
+        Math.cos(alpha) * Math.sin(beta) * Math.sin(gamma) - Math.sin(alpha) * Math.cos(gamma), Math.sin(alpha) * Math.sin(beta) * Math.sin(gamma) + Math.cos(alpha) * Math.cos(gamma), Math.cos(beta) * Math.sin(gamma),  0,
+        Math.cos(alpha) * Math.sin(beta) * Math.cos(gamma) + Math.sin(alpha) * Math.sin(gamma), Math.sin(alpha) * Math.sin(beta) * Math.cos(gamma) - Math.cos(alpha) * Math.sin(gamma), Math.cos(beta) * Math.cos(gamma),  0,
+        0, 0, 0, 1
+    ]
 
     // Rotation + transformation matrix (transforming (translation) for the camera)
     let cameraViewMat4 = [
@@ -169,6 +184,7 @@ function draw() {
     // Set uniforms
     gl.uniformMatrix4fv(terrainGen.program.view, false, new Float32Array(cameraViewMat4));
     gl.uniformMatrix4fv(terrainGen.program.projection, false, new Float32Array(projectionMat4));
+    gl.uniformMatrix4fv(terrainGen.program.viewRot, false, new Float32Array(cameraRotMat4));
 
     // Bind buffers
     gl.bindBuffer(gl.ARRAY_BUFFER, terrainGen.vertexBuffer);
