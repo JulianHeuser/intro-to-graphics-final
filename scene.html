@@ -14,8 +14,8 @@
         in vec4 aVertexPosition;
         
         uniform mat4 projection;
-        uniform mat4 view;
         uniform mat4 viewRot;
+        uniform mat4 view;
 
         out vec3 normal;
         out vec3 color;
@@ -107,11 +107,13 @@
         // Supplied vertex position attribute
         in vec4 aVertexPosition;
         uniform mat4 projection;
+        uniform mat4 viewRot;
         uniform mat4 view;
 
       void main(void) {
         // Apply Projection and view matrices0
-        gl_Position = projection * view * vec4(aVertexPosition.xyz, 1.0);
+        gl_Position = projection * viewRot * view * vec4(aVertexPosition.xyz, 1.0);
+
         normal = normalize(vec3(aVertexPosition.xyz));
         float uvFactor = 0.5;
         UV = vec2(mod(aVertexPosition.x, uvFactor) / uvFactor, mod(aVertexPosition.y, uvFactor) / uvFactor);
