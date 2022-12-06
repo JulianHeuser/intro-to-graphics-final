@@ -123,9 +123,12 @@ function draw() {
     
 
     // Move camera
-    //camPosition[2] += .1;
-    //camPosition[0] += .05;
-    //const d = new Date();
+    camPosition[2] += .1;
+    camPosition[0] += .05;
+    // move camera closer
+    //camPosition[0] = -2;
+    //camPosition[2] = -2;
+    const d = new Date();
     //camAngle[1] = Math.sin(d.getTime() / 5000);
 
 
@@ -162,6 +165,7 @@ function draw() {
     // Bind buffers
     gl.bindBuffer(gl.ARRAY_BUFFER, terrainGen.vertexBuffer);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, terrainGen.indexBuffer);
+    //binds terrain's vertexBuffer to vector point in vertex shader (in html)
     gl.vertexAttribPointer(terrainGen.program.aVertexPosition, 3, gl.FLOAT, false, 0, 0);
 
     // Draw to the scene using triangle primitives
@@ -169,6 +173,7 @@ function draw() {
 
     /* DRAW SPHERE */    
     gl.useProgram(sphere.program);
+    // should buffer sphere data be called here?
     
     // Set uniforms
     gl.uniformMatrix4fv(sphere.program.projection, false, new Float32Array(projectionMat4));
@@ -179,7 +184,7 @@ function draw() {
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphere.indexBuffer);
     gl.vertexAttribPointer(sphere.program.aVertexPosition, 3, gl.FLOAT, false, 0, 0);
 
-    // Draw to the scene using triangle primitives
+    // Draw to the scene using triangle primitives (gl.TRIANGLES, ...)
     gl.drawElements(gl.TRIANGLES, sphere.indices.length, gl.UNSIGNED_SHORT, 0);
 
     /* Clean */
