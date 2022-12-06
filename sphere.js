@@ -26,7 +26,7 @@ class Sphere{
         this.vertices = [];
         this.indices = [];
 
-        let radius = 0.5;
+        let radius = 1.0;
         let sliceSize = (Math.PI * 2) / slices;
         let stackSize = (Math.PI * 2) / stacks;
         // console.log("sliceSize: " + sliceSize + " stackSize: " + stackSize);

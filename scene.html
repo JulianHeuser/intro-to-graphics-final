@@ -97,6 +97,7 @@
       #version 300 es
 
       out vec3 normal;
+      out vec2 UV;
 
         // Supplied vertex position attribute
         in vec4 aVertexPosition;
@@ -106,7 +107,9 @@
       void main(void) {
         // Apply Projection and view matrices0
         gl_Position = projection * view * vec4(aVertexPosition.xyz, 1.0);
-        normal = normalize(vec3(aVertexPosition));
+        normal = normalize(vec3(aVertexPosition.xyz));
+        float uvFactor = 0.5;
+        UV = vec2(mod(aVertexPosition.x, uvFactor) / uvFactor, mod(aVertexPosition.y, uvFactor) / uvFactor);
       }
     </script>
 
@@ -139,7 +142,8 @@
       precision mediump float;
 
       vec3 lightDir = vec3(0.7, -1.0, 2);
-
+      
+      in vec2 UV;
       in vec3 normal;
 
       // Color that is the result of this shader
@@ -149,7 +153,8 @@
         // Add lighting
         float lightingFactor = dot(normal.xyz, normalize(lightDir));
 
-        vec3 color = vec3(0.11,0.23,1.00);
+        //vec3 color = vec3(0.11,0.23,1.00);
+        vec3 color = vec3(round(UV.x) * round(UV.y), round(UV.x) * round(UV.y), round(UV.x) * round(UV.y));
 
         fragColor = vec4(color * lightingFactor, 1);
       }
