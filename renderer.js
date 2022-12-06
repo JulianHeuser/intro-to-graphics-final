@@ -170,7 +170,7 @@ function draw() {
         1, 0, 0, 0,
         0, 1, 0, 0,
         0, 0, 1, 0,
-        camPosition[0], camPosition[1], camPosition[2], 1
+        1, 2, -5, 1
     ]
 
     /* Clear the scene */
