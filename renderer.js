@@ -130,9 +130,9 @@ function draw() {
     //camPosition[0] = -2;
     //camPosition[2] = -2;
     const d = new Date();
-    camAngle[2] += .01;
+    //camAngle[1] += .01;
 
-    //camAngle[1] = Math.sin(d.getTime() / 5000);
+    camAngle[1] = Math.sin(d.getTime() / 5000);
 
 
     /* Calculate values to send to shaders */
