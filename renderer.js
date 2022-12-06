@@ -70,9 +70,9 @@ function initProgram() {
     // We attach the location of these shader values to the program instance
     // for easy access later in the code
     terrainGen.program.aVertexPosition = gl.getAttribLocation(terrainGen.program, 'aVertexPosition');
-    terrainGen.program.projection = gl.getUniformLocation (terrainGen.program, 'projection');
-    terrainGen.program.view = gl.getUniformLocation (terrainGen.program, 'view');
-    terrainGen.program.viewRot = gl.getUniformLocation (terrainGen.program, 'viewRot');
+    terrainGen.program.projection = gl.getUniformLocation(terrainGen.program, 'projection');
+    terrainGen.program.viewRot = gl.getUniformLocation(terrainGen.program, 'viewRot');
+    terrainGen.program.view = gl.getUniformLocation(terrainGen.program, 'view');
 
     /* sphere */
     const vertexShaderSphere = getShader('vertex-shader-sphere');
@@ -95,8 +95,9 @@ function initProgram() {
     // We attach the location of these shader values to the program instance
     // for easy access later in the code
     sphere.program.aVertexPosition = gl.getAttribLocation(sphere.program, 'aVertexPosition');
-    sphere.program.projection = gl.getUniformLocation (sphere.program, 'projection');
-    sphere.program.view = gl.getUniformLocation (sphere.program, 'view');
+    sphere.program.projection = gl.getUniformLocation(sphere.program, 'projection');
+    sphere.program.viewRot = gl.getUniformLocation(sphere.program, 'viewRot');
+    sphere.program.view = gl.getUniformLocation(sphere.program, 'view');
 
 
 }
@@ -170,7 +171,7 @@ function draw() {
         1, 0, 0, 0,
         0, 1, 0, 0,
         0, 0, 1, 0,
-        1, 2, -5, 1
+        1, 600, -2000, 1
     ]
 
     /* Clear the scene */
@@ -182,9 +183,9 @@ function draw() {
     terrainGen.planeUpdate(camPosition[0], camPosition[2]);
 
     // Set uniforms
+    gl.uniformMatrix4fv(terrainGen.program.viewRot, false, new Float32Array(cameraRotMat4));
     gl.uniformMatrix4fv(terrainGen.program.view, false, new Float32Array(cameraViewMat4));
     gl.uniformMatrix4fv(terrainGen.program.projection, false, new Float32Array(projectionMat4));
-    gl.uniformMatrix4fv(terrainGen.program.viewRot, false, new Float32Array(cameraRotMat4));
 
     // Bind buffers
     gl.bindBuffer(gl.ARRAY_BUFFER, terrainGen.vertexBuffer);
@@ -200,8 +201,9 @@ function draw() {
     // should buffer sphere data be called here?
     
     // Set uniforms
-    gl.uniformMatrix4fv(sphere.program.projection, false, new Float32Array(projectionMat4));
     gl.uniformMatrix4fv(sphere.program.view, false, new Float32Array(sphereViewMat4));
+    gl.uniformMatrix4fv(sphere.program.projection, false, new Float32Array(projectionMat4));
+    gl.uniformMatrix4fv(sphere.program.viewRot, false, new Float32Array(cameraRotMat4));
 
     // bind buffers
     gl.bindBuffer(gl.ARRAY_BUFFER, sphere.vertexBuffer);
