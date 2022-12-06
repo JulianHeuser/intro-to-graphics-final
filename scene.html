@@ -18,6 +18,7 @@
         uniform mat4 viewRot;
 
         out vec3 normal;
+        out vec2 UV;
 
         vec2 fade(vec2 t) {return t*t*t*(t*(t*6.0-15.0)+10.0);}
         vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x, 289.0);}
@@ -80,6 +81,9 @@
           float B = getTerrainHeight(aVertexPosition.xz + vec2(0, -step));
           normal = normalize(vec3(2.0*(R-L), -step*2.0, 2.0*(B-T))); //vec3(rand(aVertexPosition.xz), rand(aVertexPosition.xz * 1.2), rand(aVertexPosition.xz * 2.5)); //
           
+          float uvFactor = 5.0;
+          UV = vec2(mod(vertexPos.x, uvFactor) / uvFactor, mod(vertexPos.y, uvFactor) / uvFactor));
+
           // Apply Projection and view matrices
           gl_Position = projection * viewRot * view * vec4(vertexPos.xyz, 1.0);
 
@@ -114,6 +118,7 @@
         vec3 lightDir = vec3(0.7, -1.0, -0.15);
 
         in vec3 normal;
+        in vec2 UV;
 
         // Color that is the result of this shader
         out vec4 fragColor;
@@ -122,7 +127,7 @@
           // Add lighting
           float lightingFactor = dot(normal.xyz, normalize(lightDir));
 
-          vec3 color = vec3(1,1,1);
+          vec3 color = vec3(UV.xy, UV.x);
 
           fragColor = vec4(color * (lightingFactor), 1);
         }

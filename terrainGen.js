@@ -14,7 +14,7 @@ class TerrainGen{
 
     subdivisions = 100
 
-    size = 500
+    size = 100
 
     constructor(){}
 
