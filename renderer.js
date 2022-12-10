@@ -91,13 +91,17 @@ function initProgram() {
         console.error('Could not initialize sphere shaders');
     }
     
-
     // We attach the location of these shader values to the program instance
     // for easy access later in the code
     sphere.program.aVertexPosition = gl.getAttribLocation(sphere.program, 'aVertexPosition');
+    //var positionLocation = gl.getAttribLocation(sphere.program, "a_position");
+    sphere.program.positionLocation = gl.getAttribLocation(sphere.program, "a_position");
+    sphere.program.textcoordLocation = gl.getAttribLocation(sphere.program, "a_textcoord");
     sphere.program.projection = gl.getUniformLocation(sphere.program, 'projection');
     sphere.program.viewRot = gl.getUniformLocation(sphere.program, 'viewRot');
     sphere.program.view = gl.getUniformLocation(sphere.program, 'view');
+    sphere.program.matrixLocation = gl.getUniformLocation(sphere.program, "u_matrix");
+    sphere.program.textureLocation = gl.getUniformLocation(sphere.program, "u_texture");
 
 
 }
@@ -107,6 +111,7 @@ function initBuffers() {
 
     terrainGen.bufferPlaneData(0 , 0);
 
+    // Clean
     gl.bindVertexArray(null);
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
@@ -117,28 +122,48 @@ function initBuffers() {
     gl.bindVertexArray(null);
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+
+    // texture buffer?
+    var textcoordBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, textcoordBuffer);
+    // TODO: create function to fill in buffer with text coords based on this tutorial:
+    // https://webglfundamentals.org/webgl/lessons/webgl-3d-textures.html
+    setTexcoords(gl);
+
+    // create texture
+    var texture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    // not sure why I need to fill in the texture before I load an image... just following the tutorial
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+        new Uint8Array([0, 0, 255, 255]));
+    // Asynchronously load an image
+    var image = new Image();
+    image.src = "https://images0.pixlis.com/background-image-checkers-chequered-checkered-squares-seamless-tileable-fun-blue-outrageous-orange-236jf6.png";
+    image.addEventListener('load', function() {
+        // Now that the image has loaded make copy it to the texture.
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,gl.UNSIGNED_BYTE, image);
+        gl.generateMipmap(gl.TEXTURE_2D);
+    });
 }
 
 
 // We call draw to render to our canvas
 function draw() {
     
-
     // Move camera
     camPosition[2] += .1;
     camPosition[0] += .05;
     // move camera closer
     camPosition[1] = -3;
-    //camPosition[2] = -2;
     const d = new Date();
-    //camAngle[1] += .01;
 
     camAngle[1] = (Math.sin(d.getTime() / 5000) / 2);
 
 
     /* Calculate values to send to shaders */
     let verticalFOV = fieldOfView * (aspectRatio);
-    // makes closer objs bigger
+    // Projection matrix makes closer objs bigger
     let projectionMat4 =[
         Math.atan(fieldOfView/2.0), 0, 0, 0,
         0, Math.atan(verticalFOV), 0, 0,
@@ -210,7 +235,7 @@ function draw() {
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphere.indexBuffer);
     gl.vertexAttribPointer(sphere.program.aVertexPosition, 3, gl.FLOAT, false, 0, 0);
 
-    // Draw to the scene using triangle primitives (gl.TRIANGLES, ...)
+    // Draw to the scene using triangle primitives  
     gl.drawElements(gl.TRIANGLES, sphere.indices.length, gl.UNSIGNED_SHORT, 0);
 
     /* Clean */
@@ -218,6 +243,9 @@ function draw() {
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
 }
+
+// Fill the buffer with texture coordinates the
+function setTexcoords(gl) { }
 
 // Entry point to our application
 function init() {

@@ -5,7 +5,7 @@
     <!-- modules -->
     <script type="text/javascript" src="utils.js"></script>
     
-    <!-- vertex Shader -->
+    <!-- terrain vertex Shader -->
     <script id="vertex-shader-terrain" type="x-shader/x-vertex">
         #version 300 es
         precision mediump float;
@@ -111,8 +111,13 @@
         uniform mat4 viewRot;
         uniform mat4 view;
 
+        // texture coords from https://webglfundamentals.org/webgl/lessons/webgl-3d-textures.html 
+        // Question: can I just use in and out?
+        attribute vec2 a_textcoord;
+        varying vec2 v_textcoord;
+
       void main(void) {
-        // Apply Projection and view matrices0
+        // Apply Projection and view matrices
         gl_Position = projection * viewRot * view * vec4(aVertexPosition.xyz, 1.0);
 
         // Calculate normal
@@ -121,10 +126,14 @@
 
         // Calculate "UV"
         UV = vec2(mod(aVertexPosition.x, uvFactor) / uvFactor, mod(aVertexPosition.y, uvFactor) / uvFactor);
+      
+        // pass textcoord to fragment shader
+        v_textcoord = a_textcoord;
+        // image 
       }
     </script>
 
-    <!-- fragment Shader -->
+    <!-- terrain fragment Shader -->
     <script id="fragment-shader-terrain" type="x-shader/x-fragment">
         #version 300 es
         precision mediump float;
@@ -137,11 +146,18 @@
         // Color that is the result of this shader
         out vec4 fragColor;
 
+        // texture coords from https://webglfundamentals.org/webgl/lessons/webgl-3d-textures.html 
+        varying vec2 v_textcoord;
+
+        // the texture 
+        uniform sampler2D u_texture;
+
         void main(void) {
           // Add lighting
           float lightingFactor = dot(normal.xyz, normalize(lightDir));
 
-          fragColor = vec4(color * (lightingFactor), 1);
+          //fragColor = vec4(color * (lightingFactor), 1);
+          fragColor = texture2D(u_texture, v_textcoord);
         }
     </script>
 
