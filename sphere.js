@@ -26,7 +26,7 @@ class Sphere{
         this.vertices = [];
         this.indices = [];
 
-        const radius = 200.0;
+        const radius = 1000.0;
         const sliceSize = (Math.PI * 2) / slices;
         const stackSize = (Math.PI * 2) / stacks;
         // console.log("sliceSize: " + sliceSize + " stackSize: " + stackSize);
@@ -98,7 +98,7 @@ class Sphere{
         this.currentOrigin = [x, z];
 
         // create points and indices
-        this.makeSphere(10, 10); 
+        this.makeSphere(50, 50); 
 
         // create and bind vertex buffer
         this.vertexBuffer = gl.createBuffer();

@@ -100,6 +100,7 @@ function initProgram() {
     sphere.program.projection = gl.getUniformLocation(sphere.program, 'projection');
     sphere.program.viewRot = gl.getUniformLocation(sphere.program, 'viewRot');
     sphere.program.view = gl.getUniformLocation(sphere.program, 'view');
+    sphere.program.rotation = gl.getUniformLocation(sphere.program, 'rotation');
 
 
 }
@@ -194,7 +195,18 @@ function draw() {
         1, 0, 0, 0,
         0, 1, 0, 0,
         0, 0, 1, 0,
-        1, 600, -2000, 1
+        1, 2000, -5000, 1
+    ]
+
+    // Local rotation matrix for sphere
+    gamma = 0;
+    alpha = 0;
+    beta = (d.getTime() / 2000) % (Math.PI * 2);
+    let sphereRotMat4 = [
+        Math.cos(alpha) * Math.cos(beta),                                                       Math.sin(alpha) * Math.cos(beta),                                                       -Math.sin(beta),                   0,
+        Math.cos(alpha) * Math.sin(beta) * Math.sin(gamma) - Math.sin(alpha) * Math.cos(gamma), Math.sin(alpha) * Math.sin(beta) * Math.sin(gamma) + Math.cos(alpha) * Math.cos(gamma), Math.cos(beta) * Math.sin(gamma),  0,
+        Math.cos(alpha) * Math.sin(beta) * Math.cos(gamma) + Math.sin(alpha) * Math.sin(gamma), Math.sin(alpha) * Math.sin(beta) * Math.cos(gamma) - Math.cos(alpha) * Math.sin(gamma), Math.cos(beta) * Math.cos(gamma),  0,
+        0, 0, 0, 1
     ]
 
     /* Clear the scene */
@@ -230,6 +242,7 @@ function draw() {
     gl.uniformMatrix4fv(sphere.program.viewRot, false, new Float32Array(cameraRotMat4));
     gl.uniformMatrix4fv(sphere.program.view, false, new Float32Array(sphereViewMat4));
     gl.uniformMatrix4fv(sphere.program.projection, false, new Float32Array(projectionMat4));
+    gl.uniformMatrix4fv(sphere.program.rotation, false, new Float32Array(sphereRotMat4));
 
     // bind buffers
     gl.bindBuffer(gl.ARRAY_BUFFER, sphere.vertexBuffer);

@@ -130,13 +130,14 @@
       uniform mat4 projection;
       uniform mat4 viewRot;
       uniform mat4 view;
+      uniform mat4 rotation;
 
       void main(void) {
         // Apply Projection and view matrices
-        gl_Position = projection * viewRot * view * vec4(aVertexPosition.xyz, 1.0);
+        gl_Position = projection * viewRot * view * rotation * vec4(aVertexPosition.xyz, 1.0);
 
         // Calculate normal
-        normal = normalize(aVertexPosition.xyz);
+        normal = normalize((rotation * aVertexPosition).xyz);
       
         // pass textcoord to fragment shader
         vTextCoord = aTextCoord;
