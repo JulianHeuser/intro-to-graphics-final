@@ -70,9 +70,11 @@ function initProgram() {
     // We attach the location of these shader values to the program instance
     // for easy access later in the code
     terrainGen.program.aVertexPosition = gl.getAttribLocation(terrainGen.program, 'aVertexPosition');
+    terrainGen.program.aTextCoord = gl.getAttribLocation(terrainGen.program, 'aTextCoord');
     terrainGen.program.projection = gl.getUniformLocation(terrainGen.program, 'projection');
     terrainGen.program.viewRot = gl.getUniformLocation(terrainGen.program, 'viewRot');
     terrainGen.program.view = gl.getUniformLocation(terrainGen.program, 'view');
+    terrainGen.program.textureLocation = gl.getUniformLocation(terrainGen.program, "u_texture");
 
     /* sphere */
     const vertexShaderSphere = getShader('vertex-shader-sphere');
@@ -94,14 +96,11 @@ function initProgram() {
     // We attach the location of these shader values to the program instance
     // for easy access later in the code
     sphere.program.aVertexPosition = gl.getAttribLocation(sphere.program, 'aVertexPosition');
-    //var positionLocation = gl.getAttribLocation(sphere.program, "a_position");
-    //sphere.program.positionLocation = gl.getAttribLocation(sphere.program, "a_position");
-    sphere.program.textcoordLocation = gl.getAttribLocation(sphere.program, "a_textcoord");
+    sphere.program.aTextCoord = gl.getAttribLocation(sphere.program, 'aTextCoord');
     sphere.program.projection = gl.getUniformLocation(sphere.program, 'projection');
     sphere.program.viewRot = gl.getUniformLocation(sphere.program, 'viewRot');
     sphere.program.view = gl.getUniformLocation(sphere.program, 'view');
-    sphere.program.matrixLocation = gl.getUniformLocation(sphere.program, "u_matrix");
-    sphere.program.textureLocation = gl.getUniformLocation(sphere.program, "u_texture");
+    sphere.program.rotation = gl.getUniformLocation(sphere.program, 'rotation');
 
 }
 
@@ -135,15 +134,15 @@ function initBuffers() {
     var texture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texture);
     // not sure why I need to fill in the texture before I load an image... just following the tutorial
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
-        new Uint8Array([0, 0, 255, 255]));
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 255, 255]));
+    
     // Asynchronously load an image
     var image = new Image();
-    image.src = "https://images0.pixlis.com/background-image-checkers-chequered-checkered-squares-seamless-tileable-fun-blue-outrageous-orange-236jf6.png";
+    image.src = "Grass03_Base Color.jpg";
     image.addEventListener('load', function() {
         // Now that the image has loaded make copy it to the texture.
         gl.bindTexture(gl.TEXTURE_2D, texture);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,gl.UNSIGNED_BYTE, image);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
         gl.generateMipmap(gl.TEXTURE_2D);
     });
 }
@@ -197,7 +196,18 @@ function draw() {
         1, 0, 0, 0,
         0, 1, 0, 0,
         0, 0, 1, 0,
-        1, 600, -2000, 1
+        1, 2000, -5000, 1
+    ]
+
+    // Local rotation matrix for sphere
+    gamma = 0;
+    alpha = 0;
+    beta = (d.getTime() / 2000) % (Math.PI * 2);
+    let sphereRotMat4 = [
+        Math.cos(alpha) * Math.cos(beta),                                                       Math.sin(alpha) * Math.cos(beta),                                                       -Math.sin(beta),                   0,
+        Math.cos(alpha) * Math.sin(beta) * Math.sin(gamma) - Math.sin(alpha) * Math.cos(gamma), Math.sin(alpha) * Math.sin(beta) * Math.sin(gamma) + Math.cos(alpha) * Math.cos(gamma), Math.cos(beta) * Math.sin(gamma),  0,
+        Math.cos(alpha) * Math.sin(beta) * Math.cos(gamma) + Math.sin(alpha) * Math.sin(gamma), Math.sin(alpha) * Math.sin(beta) * Math.cos(gamma) - Math.cos(alpha) * Math.sin(gamma), Math.cos(beta) * Math.cos(gamma),  0,
+        0, 0, 0, 1
     ]
 
     /* Clear the scene */
@@ -216,11 +226,14 @@ function draw() {
     // Bind buffers
     gl.bindBuffer(gl.ARRAY_BUFFER, terrainGen.vertexBuffer);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, terrainGen.indexBuffer);
+
     //binds terrain's vertexBuffer to vector point in vertex shader (in html)
-    gl.vertexAttribPointer(terrainGen.program.aVertexPosition, 3, gl.FLOAT, false, 0, 0);
+    terrainGen.bindVertexAttribPointers();
 
     // Draw to the scene using triangle primitives
-    gl.drawElements(gl.TRIANGLES, terrainGen.indices.length, gl.UNSIGNED_SHORT, 0);
+    gl.drawElements(gl.TRIANGLES, terrainGen.indices.length, gl.UNSIGNED_INT, 0);
+
+
 
     /* DRAW SPHERE */    
     gl.useProgram(sphere.program);
@@ -230,11 +243,13 @@ function draw() {
     gl.uniformMatrix4fv(sphere.program.viewRot, false, new Float32Array(cameraRotMat4));
     gl.uniformMatrix4fv(sphere.program.view, false, new Float32Array(sphereViewMat4));
     gl.uniformMatrix4fv(sphere.program.projection, false, new Float32Array(projectionMat4));
+    gl.uniformMatrix4fv(sphere.program.rotation, false, new Float32Array(sphereRotMat4));
 
     // bind buffers
     gl.bindBuffer(gl.ARRAY_BUFFER, sphere.vertexBuffer);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphere.indexBuffer);
-    gl.vertexAttribPointer(sphere.program.aVertexPosition, 3, gl.FLOAT, false, 0, 0);
+    
+    sphere.bindVertexAttribPointers();
 
     // Draw to the scene using triangle primitives  
     gl.drawElements(gl.TRIANGLES, sphere.indices.length, gl.UNSIGNED_SHORT, 0);

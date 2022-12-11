@@ -12,16 +12,14 @@
 
         // Supplied vertex position attribute
         in vec4 aVertexPosition;
-        
+        in vec2 aTextCoord;
+
+        out vec3 normal;
+        out vec2 vTextCoord;
+
         uniform mat4 projection;
         uniform mat4 viewRot;
         uniform mat4 view;
-
-        out vec3 normal;
-        out vec3 color;
-
-        vec3 colorA = vec3(0,0,1);
-        vec3 colorB = vec3(0,1,0);
 
         vec2 fade(vec2 t) {return t*t*t*(t*(t*6.0-15.0)+10.0);}
         vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x, 289.0);}
@@ -86,52 +84,11 @@
           float T = getTerrainHeight(aVertexPosition.xz + vec2(0, step));
           float B = getTerrainHeight(aVertexPosition.xz + vec2(0, -step));
           normal = normalize(vec3(2.0*(R-L), -step*2.0, 2.0*(B-T))); //vec3(rand(aVertexPosition.xz), rand(aVertexPosition.xz * 1.2), rand(aVertexPosition.xz * 2.5)); //
-          
-          // Calculate color
-          float heightFactor = vertexPos.y / 2.0 + 10.0;
-          float repeatSize = 5.0;
-          color = mix(colorA, colorB, clamp(heightFactor, 0.0, 1.0)) * mod(vertexPos.y, repeatSize) / repeatSize;
 
-
+          // Send textcoord
+          vTextCoord = aTextCoord;
         }
 
-    </script>
-
-    <!-- sphere vertex shader -->
-    <script id= "vertex-shader-sphere" type="x-shader/x-vertex"> 
-    
-      #version 300 es
-
-      out vec3 normal;
-      out vec2 UV;
-
-        // Supplied vertex position attribute
-        in vec4 aVertexPosition;
-        uniform mat4 projection;
-        uniform mat4 viewRot;
-        uniform mat4 view;
-
-        // texture coords from https://webglfundamentals.org/webgl/lessons/webgl-3d-textures.html 
-        // Question: can I just use in and out?
-        attribute vec2 a_textcoord;
-        attribute vec2 v_textcoord;
-        //varying vec2 v_textcoord;
-
-      void main(void) {
-        // Apply Projection and view matrices
-        gl_Position = projection * viewRot * view * vec4(aVertexPosition.xyz, 1.0);
-
-        // Calculate normal
-        normal = normalize(vec3(aVertexPosition.xyz));
-        float uvFactor = 0.5;
-
-        // Calculate "UV"
-        UV = vec2(mod(aVertexPosition.x, uvFactor) / uvFactor, mod(aVertexPosition.y, uvFactor) / uvFactor);
-      
-        // pass textcoord to fragment shader
-        v_textcoord = a_textcoord;
-        // image 
-      }
     </script>
 
     <!-- terrain fragment Shader -->
@@ -140,15 +97,11 @@
         precision mediump float;
 
         vec3 lightDir = vec3(0.7, -1.0, 0.15);
-
         in vec3 normal;
-        in vec3 color;
+        in vec2 vTextCoord;       // texture coords from https://webglfundamentals.org/webgl/lessons/webgl-3d-textures.html 
 
         // Color that is the result of this shader
         out vec4 fragColor;
-
-        // texture coords from https://webglfundamentals.org/webgl/lessons/webgl-3d-textures.html 
-        varying vec2 v_textcoord;
 
         // the texture 
         uniform sampler2D u_texture;
@@ -157,8 +110,39 @@
           // Add lighting
           float lightingFactor = dot(normal.xyz, normalize(lightDir));
 
-          fragColor = vec4(color * (lightingFactor), 1);
+          vec4 textSample = texture(u_texture, vTextCoord);
+          fragColor = vec4(textSample.x * lightingFactor, textSample.y * lightingFactor, textSample.z * lightingFactor, 1);
         }
+    </script>
+
+    <!-- sphere vertex shader -->
+    <script id= "vertex-shader-sphere" type="x-shader/x-vertex"> 
+    
+      #version 300 es
+
+      out vec3 normal;
+      out vec2 vTextCoord;
+
+      // Supplied vertex position attribute
+      in vec4 aVertexPosition;
+      in vec2 aTextCoord;
+
+      uniform mat4 projection;
+      uniform mat4 viewRot;
+      uniform mat4 view;
+      uniform mat4 rotation;
+
+      void main(void) {
+        // Apply Projection and view matrices
+        gl_Position = projection * viewRot * view * rotation * vec4(aVertexPosition.xyz, 1.0);
+
+        // Calculate normal
+        normal = normalize((rotation * aVertexPosition).xyz);
+      
+        // pass textcoord to fragment shader
+        vTextCoord = aTextCoord;
+        // image 
+      }
     </script>
 
     <!-- sphere fragment shader-->
@@ -166,10 +150,13 @@
       #version 300 es
       precision mediump float;
 
-      vec3 lightDir = vec3(0.7, -1.0, 2);
+      vec3 lightDir = vec3(0.7, -1.0, 0.15);
       
-      in vec2 UV;
       in vec3 normal;
+      in vec2 vTextCoord;
+
+      // the texture 
+      uniform sampler2D u_texture;
 
       // Color that is the result of this shader
       out vec4 fragColor;
@@ -178,11 +165,8 @@
         // Add lighting
         float lightingFactor = dot(normal.xyz, normalize(lightDir));
 
-        //vec3 color = vec3(0.11,0.23,1.00);
-        vec3 color = vec3(round(UV.x) * round(UV.y), round(UV.x) * round(UV.y), round(UV.x) * round(UV.y));
-
-       // fragColor = vec4(color * lightingFactor, 1);
-        fragColor = texture2D(u_texture, v_textcoord);
+        vec4 textSample = texture(u_texture, vTextCoord);
+        fragColor = vec4(textSample.x * lightingFactor, textSample.y * lightingFactor, textSample.z * lightingFactor, 1);
       }
   </script>
 
