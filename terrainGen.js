@@ -15,11 +15,12 @@ class TerrainGen{
     size = 500;
     textCoordSize = 10;
 
+    updateStage = 0;
+
     constructor(){}
 
     createPlane(){
         let dist = this.size/this.subdivisions;
-
         let currentIndex = 0;
 
         this.vertices = [];
@@ -46,13 +47,12 @@ class TerrainGen{
                 currentIndex += 4;
             }
         }
+
+        this.updateStage++;
     }
 
     bufferPlaneData(x, z){
         this.currentOrigin = [x, z];
-
-        // create points and indices
-        this.createPlane();
 
         // create and bind vertex buffer
         this.vertexBuffer = gl.createBuffer();
@@ -77,7 +77,7 @@ class TerrainGen{
 
     planeUpdate(x, z){
 
-        let factor = (this.size/this.subdivisions)
+        let factor = (this.size / this.subdivisions)
         x = -Math.floor(x / factor) * factor;
         z = -Math.floor(z / factor) * factor;
         
@@ -85,8 +85,15 @@ class TerrainGen{
             return;
         }
 
+        if (this.updateStage == 0){
+            this.createPlane();
+            return;
+        }
+
         this.bufferPlaneData(x, z);
 
+        this.updateStage = 0;
+        
         // Clean
         gl.bindVertexArray(null);
         gl.bindBuffer(gl.ARRAY_BUFFER, null);
