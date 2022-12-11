@@ -121,19 +121,34 @@ function initBuffers() {
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
 
-    // create texture
-    var texture = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, texture);
+    // create terrian texture
+    terrainGen.terrainTexture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, terrainGen.terrainTexture);
     // not sure why I need to fill in the texture before I load an image... just following the tutorial
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 255, 255]));
     
     // Asynchronously load an image
-    var image = new Image();
-    image.src = "Grass03_Base Color.jpg";
-    image.addEventListener('load', function() {
+    var terrainImage = new Image();
+    terrainImage.src = "Grass03_Base Color.jpg";
+    terrainImage.addEventListener('load', function() {
         // Now that the image has loaded make copy it to the texture.
-        gl.bindTexture(gl.TEXTURE_2D, texture);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
+        gl.bindTexture(gl.TEXTURE_2D, terrainGen.terrainTexture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, terrainImage);
+        gl.generateMipmap(gl.TEXTURE_2D);
+    });
+
+    // create sphere texture
+    sphere.sphereTexture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, sphere.sphereTexture);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 255, 255]));
+    
+    // Asynchronously load an image
+    var sphereImage = new Image();
+    sphereImage.src = "checkerboard image.jpg";
+    sphereImage.addEventListener('load', function() {
+        // Now that the image has loaded make copy it to the texture.
+        gl.bindTexture(gl.TEXTURE_2D, sphere.sphereTexture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, sphereImage);
         gl.generateMipmap(gl.TEXTURE_2D);
     });
 }
@@ -217,6 +232,7 @@ function draw() {
     // Bind buffers
     gl.bindBuffer(gl.ARRAY_BUFFER, terrainGen.vertexBuffer);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, terrainGen.indexBuffer);
+    gl.bindTexture(gl.TEXTURE_2D, terrainGen.terrainTexture);
 
     //binds terrain's vertexBuffer to vector point in vertex shader (in html)
     terrainGen.bindVertexAttribPointers();
@@ -239,6 +255,7 @@ function draw() {
     // bind buffers
     gl.bindBuffer(gl.ARRAY_BUFFER, sphere.vertexBuffer);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphere.indexBuffer);
+    gl.bindTexture(gl.TEXTURE_2D, sphere.sphereTexture);
     
     sphere.bindVertexAttribPointers();
 
