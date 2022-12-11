@@ -70,6 +70,7 @@ function initProgram() {
     // We attach the location of these shader values to the program instance
     // for easy access later in the code
     terrainGen.program.aVertexPosition = gl.getAttribLocation(terrainGen.program, 'aVertexPosition');
+    terrainGen.program.aTextCoord = gl.getAttribLocation(terrainGen.program, 'aTextCoord');
     terrainGen.program.projection = gl.getUniformLocation(terrainGen.program, 'projection');
     terrainGen.program.viewRot = gl.getUniformLocation(terrainGen.program, 'viewRot');
     terrainGen.program.view = gl.getUniformLocation(terrainGen.program, 'view');
@@ -142,7 +143,7 @@ function initBuffers() {
     image.addEventListener('load', function() {
         // Now that the image has loaded make copy it to the texture.
         gl.bindTexture(gl.TEXTURE_2D, texture);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, 4096, 4096, 0, gl.RGB, gl.UNSIGNED_BYTE, image);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
         gl.generateMipmap(gl.TEXTURE_2D);
     });
 }
@@ -215,8 +216,9 @@ function draw() {
     // Bind buffers
     gl.bindBuffer(gl.ARRAY_BUFFER, terrainGen.vertexBuffer);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, terrainGen.indexBuffer);
+
     //binds terrain's vertexBuffer to vector point in vertex shader (in html)
-    gl.vertexAttribPointer(terrainGen.program.aVertexPosition, 3, gl.FLOAT, false, 0, 0);
+    terrainGen.bindVertexAttribPointers();
 
     // Draw to the scene using triangle primitives
     gl.drawElements(gl.TRIANGLES, terrainGen.indices.length, gl.UNSIGNED_SHORT, 0);

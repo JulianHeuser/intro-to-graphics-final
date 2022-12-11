@@ -12,6 +12,7 @@
 
         // Supplied vertex position attribute
         in vec4 aVertexPosition;
+        in vec2 aTextCoord;
 
         out vec3 normal;
         out vec2 vTextCoord;
@@ -83,11 +84,9 @@
           float T = getTerrainHeight(aVertexPosition.xz + vec2(0, step));
           float B = getTerrainHeight(aVertexPosition.xz + vec2(0, -step));
           normal = normalize(vec3(2.0*(R-L), -step*2.0, 2.0*(B-T))); //vec3(rand(aVertexPosition.xz), rand(aVertexPosition.xz * 1.2), rand(aVertexPosition.xz * 2.5)); //
-          
-          // Calculate color
-          float repeatSize = 5.0;
 
-          vTextCoord = vec2(mod(vertexPos.x, repeatSize) / repeatSize, mod(vertexPos.z, repeatSize) / repeatSize);
+          // Send textcoord
+          vTextCoord = aTextCoord;
         }
 
     </script>
