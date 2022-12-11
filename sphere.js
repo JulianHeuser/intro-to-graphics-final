@@ -52,7 +52,7 @@ class Sphere{
                 let z = radius * Math.cos(phi);
 
                 // console.log("i: " + i + " j: " + j + " theta: " + theta + " phi: " + phi + " x: " + x + " y: " + y + " z: " + z);
-                points[i][j] = [x,y,z];
+                points[i][j] = [x, y, z, 1 - (theta / Math.PI), phi / (2 * Math.PI)];
             }
         }
 
@@ -69,10 +69,10 @@ class Sphere{
                 // console.log("p0: " + p0 + " p1: " + p1 + " p2: " + p2 + " p3: " + p3);
 
                 // make sure to draw ccw
-                this.vertices.push( p0[0], p0[1], p0[2], 0, 0,
-                                    p1[0], p1[1], p1[2], 0, 0,
-                                    p2[0], p2[1], p2[2], 0, 0,
-                                    p3[0], p3[1], p3[2], 0, 0);
+                this.vertices.push( p0[0], p0[1], p0[2], p0[3], p0[4],
+                                    p1[0], p1[1], p1[2], p1[3], p1[4],
+                                    p2[0], p2[1], p2[2], p2[3], p2[4],
+                                    p3[0], p3[1], p3[2], p3[3], p3[4]);
 
                 this.indices.push(currentIndex + 0, currentIndex + 1, currentIndex + 2);
                 this.indices.push(currentIndex + 0, currentIndex + 2, currentIndex + 3);

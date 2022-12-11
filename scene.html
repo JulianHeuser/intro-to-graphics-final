@@ -110,8 +110,8 @@
           // Add lighting
           float lightingFactor = dot(normal.xyz, normalize(lightDir));
 
-          //fragColor = vec4(color * (lightingFactor), 1);
-          fragColor = texture(u_texture, vTextCoord) * lightingFactor;
+          vec4 textSample = texture(u_texture, vTextCoord);
+          fragColor = vec4(textSample.x * lightingFactor, textSample.y * lightingFactor, textSample.z * lightingFactor, 1);
         }
     </script>
 
@@ -136,7 +136,7 @@
         gl_Position = projection * viewRot * view * vec4(aVertexPosition.xyz, 1.0);
 
         // Calculate normal
-        normal = normalize(vec3(aVertexPosition.xyz));
+        normal = normalize(aVertexPosition.xyz);
       
         // pass textcoord to fragment shader
         vTextCoord = aTextCoord;
@@ -149,10 +149,13 @@
       #version 300 es
       precision mediump float;
 
-      vec3 lightDir = vec3(0.7, -1.0, 2);
+      vec3 lightDir = vec3(0.7, -1.0, 0.15);
       
       in vec3 normal;
       in vec2 vTextCoord;
+
+      // the texture 
+      uniform sampler2D u_texture;
 
       // Color that is the result of this shader
       out vec4 fragColor;
@@ -161,7 +164,8 @@
         // Add lighting
         float lightingFactor = dot(normal.xyz, normalize(lightDir));
 
-        fragColor = vec4(vTextCoord.xy,1,1) * lightingFactor;//vec4(vTextCoord.xy * lightingFactor, 0, 1);
+        vec4 textSample = texture(u_texture, vTextCoord);
+        fragColor = vec4(textSample.x * lightingFactor, textSample.y * lightingFactor, textSample.z * lightingFactor, 1);
       }
   </script>
 
