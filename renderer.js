@@ -95,6 +95,7 @@ function initProgram() {
     // We attach the location of these shader values to the program instance
     // for easy access later in the code
     sphere.program.aVertexPosition = gl.getAttribLocation(sphere.program, 'aVertexPosition');
+    sphere.program.aTextCoord = gl.getAttribLocation(sphere.program, 'aTextCoord');
     //var positionLocation = gl.getAttribLocation(sphere.program, "a_position");
     sphere.program.positionLocation = gl.getAttribLocation(sphere.program, "a_position");
     sphere.program.textcoordLocation = gl.getAttribLocation(sphere.program, "a_textcoord");
@@ -223,6 +224,11 @@ function draw() {
     // Draw to the scene using triangle primitives
     gl.drawElements(gl.TRIANGLES, terrainGen.indices.length, gl.UNSIGNED_SHORT, 0);
 
+
+    gl.bindVertexArray(null);
+    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+
     /* DRAW SPHERE */    
     gl.useProgram(sphere.program);
     // should buffer sphere data be called here?
@@ -235,7 +241,8 @@ function draw() {
     // bind buffers
     gl.bindBuffer(gl.ARRAY_BUFFER, sphere.vertexBuffer);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphere.indexBuffer);
-    gl.vertexAttribPointer(sphere.program.aVertexPosition, 3, gl.FLOAT, false, 0, 0);
+    
+    sphere.bindVertexAttribPointers();
 
     // Draw to the scene using triangle primitives  
     gl.drawElements(gl.TRIANGLES, sphere.indices.length, gl.UNSIGNED_SHORT, 0);

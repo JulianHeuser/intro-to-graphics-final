@@ -68,8 +68,12 @@ class Sphere{
                 // console.log("p0: " + p0 + " p1: " + p1 + " p2: " + p2 + " p3: " + p3);
 
                 // make sure to draw ccw
-                this.sphereBuffer(p0[0], p0[1], p0[2], p2[0], p2[1], p2[2], p1[0], p1[1], p1[2]);
-                this.sphereBuffer(p0[0], p0[1], p0[2], p3[0], p3[1], p3[2], p2[0], p2[1], p2[2]);
+                this.sphereBuffer(  p0[0], p0[1], p0[2], 0, 0,
+                                    p2[0], p2[1], p2[2], 0, 0,
+                                    p1[0], p1[1], p1[2], 0, 0);
+                this.sphereBuffer(  p0[0], p0[1], p0[2], 0, 0,
+                                    p3[0], p3[1], p3[2], 0, 0,
+                                    p2[0], p2[1], p2[2], 0, 0);
             }
         }
 
@@ -87,16 +91,18 @@ class Sphere{
         // }
     }
 
-    sphereBuffer(x0,y0,z0,x1,y1,z1,x2,y2,z2){
+    sphereBuffer(x0, y0, z0, u0, v0, x1, y1, z1, u1, v1, x2, y2, z2, u2, v2){
 
-        let numVertices = this.vertices.length / 4;
+        let numVertices = this.vertices.length / 6;
 
         // vertex 1
         this.vertices.push(x0);
         this.vertices.push(y0);
         this.vertices.push(z0);
         // push u and v for texture coordinates
-        //vertices.push(1.0); // not sure about this
+        this.vertices.push(u0);
+        this.vertices.push(v0);
+        // push indices
         this.indices.push(numVertices);
         numVertices++;
 
@@ -104,7 +110,10 @@ class Sphere{
         this.vertices.push(x1);
         this.vertices.push(y1);
         this.vertices.push(z1);
-        //vertices.push(1.0); // not sure about this
+        // push u and v for texture coordinates
+        this.vertices.push(u1);
+        this.vertices.push(v1);
+        // push indices
         this.indices.push(numVertices);
         numVertices++;
 
@@ -112,7 +121,10 @@ class Sphere{
         this.vertices.push(x2);
         this.vertices.push(y2);
         this.vertices.push(z2);
-        //vertices.push(1.0); // not sure about this
+        // push u and v for texture coordinates
+        this.vertices.push(u2);
+        this.vertices.push(v2);
+        // push indices
         this.indices.push(numVertices);
         numVertices++;
     }
@@ -121,19 +133,27 @@ class Sphere{
         this.currentOrigin = [x, z];
 
         // create points and indices
-        this.makeSphere(100, 100); 
+        this.makeSphere(50, 50); 
 
         // create and bind vertex buffer
         this.vertexBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.DYNAMIC_DRAW);
         gl.enableVertexAttribArray(this.program.aVertexPosition);
-        gl.vertexAttribPointer(this.program.aVertexPosition, 3, gl.FLOAT, false, 0, 0);
+
+        // bind textcoord buffer
+        gl.enableVertexAttribArray(this.program.aTextCoord);
+        this.bindVertexAttribPointers();
 
         // Setting up the IBO
         if (this.indexBuffer == null) this.indexBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.indices), gl.DYNAMIC_DRAW);
+    }
+
+    bindVertexAttribPointers(){
+        gl.vertexAttribPointer(this.program.aVertexPosition, 3, gl.FLOAT, false, 5 * 4, 0);
+        gl.vertexAttribPointer(this.program.aTextCoord, 2, gl.FLOAT, false, 5 * 4, 3 * 4);
     }
 }
 
