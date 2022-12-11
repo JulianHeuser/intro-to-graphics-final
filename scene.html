@@ -132,6 +132,7 @@
       uniform mat4 view;
       uniform mat4 rotation;
 
+
       void main(void) {
         // Apply Projection and view matrices
         gl_Position = projection * viewRot * view * rotation * vec4(aVertexPosition.xyz, 1.0);
@@ -160,13 +161,15 @@
 
       // Color that is the result of this shader
       out vec4 fragColor;
+      
+      vec3 atmosphereColor = vec3(0.756862745,0.639215686,0.760784314);
 
       void main(void) {
         // Add lighting
         float lightingFactor = dot(normal.xyz, normalize(lightDir));
 
         vec4 textSample = texture(u_texture, vTextCoord);
-        fragColor = vec4(textSample.x * lightingFactor, textSample.y * lightingFactor, textSample.z * lightingFactor, 1);
+        fragColor = vec4(mix(textSample.xyz, atmosphereColor, lightingFactor), 1);
       }
   </script>
 

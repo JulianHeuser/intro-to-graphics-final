@@ -54,7 +54,7 @@ class Sphere{
                 let z = radius * Math.cos(phi);
 
                 // console.log("i: " + i + " j: " + j + " theta: " + theta + " phi: " + phi + " x: " + x + " y: " + y + " z: " + z);
-                points[i][j] = [x, z, y, 1 - (theta / Math.PI), phi / (2 * Math.PI)];
+                points[i][j] = [x, z, y, theta / (2 * Math.PI), 1 - (phi / Math.PI)];
             }
         }
 
@@ -76,8 +76,8 @@ class Sphere{
                                     p2[0], p2[1], p2[2], p2[3], p2[4],
                                     p3[0], p3[1], p3[2], p3[3], p3[4]);
 
-                this.indices.push(currentIndex + 0, currentIndex + 1, currentIndex + 2);
-                this.indices.push(currentIndex + 0, currentIndex + 2, currentIndex + 3);
+                this.indices.push(currentIndex + 2, currentIndex + 1, currentIndex + 0);
+                this.indices.push(currentIndex + 3, currentIndex + 2, currentIndex + 0);
                 currentIndex += 4;
             }
         }
