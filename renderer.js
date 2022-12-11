@@ -231,7 +231,7 @@ function draw() {
     gl.uniformMatrix4fv(terrainGen.program.viewRot, false, new Float32Array(cameraRotMat4));
     gl.uniformMatrix4fv(terrainGen.program.view, false, new Float32Array(cameraViewMat4));
     gl.uniformMatrix4fv(terrainGen.program.projection, false, new Float32Array(projectionMat4));
-    gl.uniform3f(terrainGen.program.lightDir, 0.7, -1.0, 0.15);
+    gl.uniform3f(terrainGen.program.lightDir, -1.155, 0.577, 0.577);
 
     // Bind buffers
     gl.bindBuffer(gl.ARRAY_BUFFER, terrainGen.vertexBuffer);
@@ -254,7 +254,7 @@ function draw() {
     gl.uniformMatrix4fv(sphere.program.view, false, new Float32Array(sphereViewMat4));
     gl.uniformMatrix4fv(sphere.program.projection, false, new Float32Array(projectionMat4));
     gl.uniformMatrix4fv(sphere.program.rotation, false, new Float32Array(sphereRotMat4));
-    gl.uniform3f(sphere.program.lightDir, -0.7, 1.0, 0.55);
+    gl.uniform3f(sphere.program.lightDir, -1.155, 0.577, 0.577);
 
     // bind buffers
     gl.bindBuffer(gl.ARRAY_BUFFER, sphere.vertexBuffer);
