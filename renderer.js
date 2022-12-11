@@ -74,6 +74,7 @@ function initProgram() {
     terrainGen.program.projection = gl.getUniformLocation(terrainGen.program, 'projection');
     terrainGen.program.viewRot = gl.getUniformLocation(terrainGen.program, 'viewRot');
     terrainGen.program.view = gl.getUniformLocation(terrainGen.program, 'view');
+    terrainGen.program.textureLocation = gl.getUniformLocation(terrainGen.program, "u_texture");
 
     /* sphere */
     const vertexShaderSphere = getShader('vertex-shader-sphere');
@@ -96,14 +97,9 @@ function initProgram() {
     // for easy access later in the code
     sphere.program.aVertexPosition = gl.getAttribLocation(sphere.program, 'aVertexPosition');
     sphere.program.aTextCoord = gl.getAttribLocation(sphere.program, 'aTextCoord');
-    //var positionLocation = gl.getAttribLocation(sphere.program, "a_position");
-    sphere.program.positionLocation = gl.getAttribLocation(sphere.program, "a_position");
-    sphere.program.textcoordLocation = gl.getAttribLocation(sphere.program, "a_textcoord");
     sphere.program.projection = gl.getUniformLocation(sphere.program, 'projection');
     sphere.program.viewRot = gl.getUniformLocation(sphere.program, 'viewRot');
     sphere.program.view = gl.getUniformLocation(sphere.program, 'view');
-    sphere.program.matrixLocation = gl.getUniformLocation(sphere.program, "u_matrix");
-    sphere.program.textureLocation = gl.getUniformLocation(sphere.program, "u_texture");
 
 
 }
@@ -225,9 +221,6 @@ function draw() {
     gl.drawElements(gl.TRIANGLES, terrainGen.indices.length, gl.UNSIGNED_SHORT, 0);
 
 
-    gl.bindVertexArray(null);
-    gl.bindBuffer(gl.ARRAY_BUFFER, null);
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
 
     /* DRAW SPHERE */    
     gl.useProgram(sphere.program);

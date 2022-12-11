@@ -75,15 +75,6 @@ class TerrainGen{
         gl.vertexAttribPointer(this.program.aTextCoord, 2, gl.FLOAT, false, 5 * 4, 3 * 4);
     }
 
-    bindPlaneData(){
-        gl.enableVertexAttribArray(this.program.aVertexPosition);
-        gl.enableVertexAttribArray(this.program.textCoordBuffer);
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
-
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-    }
-
     planeUpdate(x, z){
 
         let factor = (this.size/this.subdivisions)
