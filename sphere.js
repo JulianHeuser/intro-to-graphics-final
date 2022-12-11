@@ -12,6 +12,8 @@ class Sphere{
     vertexBuffer = null;
     indexBuffer = null;
 
+    sphereTexture;
+
     program;
 
     constructor(){}
@@ -52,7 +54,7 @@ class Sphere{
                 let z = radius * Math.cos(phi);
 
                 // console.log("i: " + i + " j: " + j + " theta: " + theta + " phi: " + phi + " x: " + x + " y: " + y + " z: " + z);
-                points[i][j] = [x, y, z, 1 - (theta / Math.PI), phi / (2 * Math.PI)];
+                points[i][j] = [x, z, y, 1 - (theta / Math.PI), phi / (2 * Math.PI)];
             }
         }
 
