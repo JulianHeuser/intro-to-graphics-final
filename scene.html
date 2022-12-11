@@ -96,7 +96,7 @@
         #version 300 es
         precision mediump float;
 
-        uniform lightDir;
+        uniform vec3 lightDir;
         in vec3 normal;
         in vec2 vTextCoord;       // texture coords from https://webglfundamentals.org/webgl/lessons/webgl-3d-textures.html 
 
@@ -150,7 +150,7 @@
       #version 300 es
       precision mediump float;
 
-      uniform lightDir;
+      uniform vec3 lightDir;
       
       in vec3 normal;
       in vec2 vTextCoord;       // texture coords from https://webglfundamentals.org/webgl/lessons/webgl-3d-textures.html

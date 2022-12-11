@@ -146,7 +146,7 @@ function initBuffers() {
     
     // Asynchronously load an image
     var sphereImage = new Image();
-    sphereImage.src = "ceres.jpg";
+    sphereImage.src = "jupiter.jpg";
     sphereImage.addEventListener('load', function() {
         // Now that the image has loaded make copy it to the texture.
         gl.bindTexture(gl.TEXTURE_2D, sphere.sphereTexture);
@@ -253,7 +253,7 @@ function draw() {
     gl.uniformMatrix4fv(sphere.program.view, false, new Float32Array(sphereViewMat4));
     gl.uniformMatrix4fv(sphere.program.projection, false, new Float32Array(projectionMat4));
     gl.uniformMatrix4fv(sphere.program.rotation, false, new Float32Array(sphereRotMat4));
-    gl.uniform3f(sphere.program.lightDir, 0.7, -1.0, 0.15);
+    gl.uniform3f(sphere.program.lightDir, -0.7, 1.0, 0.15);
 
     // bind buffers
     gl.bindBuffer(gl.ARRAY_BUFFER, sphere.vertexBuffer);
