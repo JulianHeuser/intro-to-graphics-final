@@ -70,6 +70,7 @@ function initProgram() {
     // We attach the location of these shader values to the program instance
     // for easy access later in the code
     terrainGen.program.aVertexPosition = gl.getAttribLocation(terrainGen.program, 'aVertexPosition');
+    terrainGen.program.aTextCoord = gl.getAttribLocation(terrainGen.program, 'aTextCoord');
     terrainGen.program.projection = gl.getUniformLocation(terrainGen.program, 'projection');
     terrainGen.program.viewRot = gl.getUniformLocation(terrainGen.program, 'viewRot');
     terrainGen.program.view = gl.getUniformLocation(terrainGen.program, 'view');
@@ -91,22 +92,24 @@ function initProgram() {
         console.error('Could not initialize sphere shaders');
     }
     
-
     // We attach the location of these shader values to the program instance
     // for easy access later in the code
     sphere.program.aVertexPosition = gl.getAttribLocation(sphere.program, 'aVertexPosition');
+    sphere.program.aTextCoord = gl.getAttribLocation(sphere.program, 'aTextCoord');
     sphere.program.projection = gl.getUniformLocation(sphere.program, 'projection');
     sphere.program.viewRot = gl.getUniformLocation(sphere.program, 'viewRot');
     sphere.program.view = gl.getUniformLocation(sphere.program, 'view');
-
+    sphere.program.rotation = gl.getUniformLocation(sphere.program, 'rotation');
 
 }
 
     // Set up the buffers
 function initBuffers() {
 
+    terrainGen.createPlane();
     terrainGen.bufferPlaneData(0 , 0);
 
+    // Clean
     gl.bindVertexArray(null);
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
@@ -117,28 +120,41 @@ function initBuffers() {
     gl.bindVertexArray(null);
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+
+    // create texture
+    var texture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    // not sure why I need to fill in the texture before I load an image... just following the tutorial
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 255, 255]));
+    
+    // Asynchronously load an image
+    var image = new Image();
+    image.src = "Grass03_Base Color.jpg";
+    image.addEventListener('load', function() {
+        // Now that the image has loaded make copy it to the texture.
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
+        gl.generateMipmap(gl.TEXTURE_2D);
+    });
 }
 
 
 // We call draw to render to our canvas
 function draw() {
     
-
     // Move camera
     camPosition[2] += .1;
     camPosition[0] += .05;
     // move camera closer
     camPosition[1] = -3;
-    //camPosition[2] = -2;
     const d = new Date();
-    //camAngle[1] += .01;
 
     camAngle[1] = (Math.sin(d.getTime() / 5000) / 2);
 
 
     /* Calculate values to send to shaders */
     let verticalFOV = fieldOfView * (aspectRatio);
-    // makes closer objs bigger
+    // Projection matrix makes closer objs bigger
     let projectionMat4 =[
         Math.atan(fieldOfView/2.0), 0, 0, 0,
         0, Math.atan(verticalFOV), 0, 0,
@@ -171,7 +187,18 @@ function draw() {
         1, 0, 0, 0,
         0, 1, 0, 0,
         0, 0, 1, 0,
-        1, 600, -2000, 1
+        1, 2000, -5000, 1
+    ]
+
+    // Local rotation matrix for sphere
+    gamma = 0;
+    alpha = 0;
+    beta = (d.getTime() / 2000) % (Math.PI * 2);
+    let sphereRotMat4 = [
+        Math.cos(alpha) * Math.cos(beta),                                                       Math.sin(alpha) * Math.cos(beta),                                                       -Math.sin(beta),                   0,
+        Math.cos(alpha) * Math.sin(beta) * Math.sin(gamma) - Math.sin(alpha) * Math.cos(gamma), Math.sin(alpha) * Math.sin(beta) * Math.sin(gamma) + Math.cos(alpha) * Math.cos(gamma), Math.cos(beta) * Math.sin(gamma),  0,
+        Math.cos(alpha) * Math.sin(beta) * Math.cos(gamma) + Math.sin(alpha) * Math.sin(gamma), Math.sin(alpha) * Math.sin(beta) * Math.cos(gamma) - Math.cos(alpha) * Math.sin(gamma), Math.cos(beta) * Math.cos(gamma),  0,
+        0, 0, 0, 1
     ]
 
     /* Clear the scene */
@@ -190,11 +217,14 @@ function draw() {
     // Bind buffers
     gl.bindBuffer(gl.ARRAY_BUFFER, terrainGen.vertexBuffer);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, terrainGen.indexBuffer);
+
     //binds terrain's vertexBuffer to vector point in vertex shader (in html)
-    gl.vertexAttribPointer(terrainGen.program.aVertexPosition, 3, gl.FLOAT, false, 0, 0);
+    terrainGen.bindVertexAttribPointers();
 
     // Draw to the scene using triangle primitives
-    gl.drawElements(gl.TRIANGLES, terrainGen.indices.length, gl.UNSIGNED_SHORT, 0);
+    gl.drawElements(gl.TRIANGLES, terrainGen.indices.length, gl.UNSIGNED_INT, 0);
+
+
 
     /* DRAW SPHERE */    
     gl.useProgram(sphere.program);
@@ -204,19 +234,31 @@ function draw() {
     gl.uniformMatrix4fv(sphere.program.viewRot, false, new Float32Array(cameraRotMat4));
     gl.uniformMatrix4fv(sphere.program.view, false, new Float32Array(sphereViewMat4));
     gl.uniformMatrix4fv(sphere.program.projection, false, new Float32Array(projectionMat4));
+    gl.uniformMatrix4fv(sphere.program.rotation, false, new Float32Array(sphereRotMat4));
 
     // bind buffers
     gl.bindBuffer(gl.ARRAY_BUFFER, sphere.vertexBuffer);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphere.indexBuffer);
-    gl.vertexAttribPointer(sphere.program.aVertexPosition, 3, gl.FLOAT, false, 0, 0);
+    
+    sphere.bindVertexAttribPointers();
 
-    // Draw to the scene using triangle primitives (gl.TRIANGLES, ...)
+    // Draw to the scene using triangle primitives  
     gl.drawElements(gl.TRIANGLES, sphere.indices.length, gl.UNSIGNED_SHORT, 0);
 
     /* Clean */
     gl.bindVertexArray(null);
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+}
+
+// Fill the buffer with texture coordinates the
+// TODO: figure out points for a sphere
+function setTexcoords(gl) { 
+    gl.bufferData(
+        gl.ARRAY_BUFFER,
+        new Float32Array( [] ), 
+        gl.STATIC_DRAW
+    );
 }
 
 // Entry point to our application

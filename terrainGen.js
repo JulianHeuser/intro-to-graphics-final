@@ -8,23 +8,24 @@ class TerrainGen{
 
     program;
 
-    planeHeight = -15;
-
     currentOrigin = [0, 0]
 
-    subdivisions = 100
+    planeHeight = -15;
+    subdivisions = 300;
+    size = 500;
+    textCoordSize = 10;
 
-    size = 100
+    updateStage = 0;
 
     constructor(){}
 
     createPlane(){
         let dist = this.size/this.subdivisions;
-
         let currentIndex = 0;
 
         this.vertices = [];
         this.indices = [];
+        this.textCoords = [];
         
         for(let i = 0; i < this.subdivisions; i++){
             for(let j = 0; j < this.subdivisions; j++){
@@ -36,52 +37,63 @@ class TerrainGen{
                 let z1 = z0 + dist;
                 
                 // Triangle configurations for one quad
-                this.vertices.push(x0, this.planeHeight, z0, x0, this.planeHeight, z1, x1, this.planeHeight, z0, x1, this.planeHeight, z1);
+                this.vertices.push( x0, this.planeHeight, z0, x0 / this.size * this.textCoordSize, z0 / this.size * this.textCoordSize,
+                                    x0, this.planeHeight, z1, x0 / this.size * this.textCoordSize, z1 / this.size * this.textCoordSize,
+                                    x1, this.planeHeight, z0, x1 / this.size * this.textCoordSize, z0 / this.size * this.textCoordSize,
+                                    x1, this.planeHeight, z1, x1 / this.size * this.textCoordSize, z1 / this.size * this.textCoordSize);
                 
                 this.indices.push(currentIndex + 0, currentIndex + 1, currentIndex + 2);
                 this.indices.push(currentIndex + 3, currentIndex + 2, currentIndex + 1);
                 currentIndex += 4;
             }
         }
+
+        this.updateStage++;
     }
 
     bufferPlaneData(x, z){
         this.currentOrigin = [x, z];
-
-        // create points and indices
-        this.createPlane();
 
         // create and bind vertex buffer
         this.vertexBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.DYNAMIC_DRAW);
         gl.enableVertexAttribArray(this.program.aVertexPosition);
-        gl.vertexAttribPointer(this.program.aVertexPosition, 3, gl.FLOAT, false, 0, 0);
 
-        // Setting up the IBO
+        // bind textcoord buffer
+        gl.enableVertexAttribArray(this.program.aTextCoord);
+        this.bindVertexAttribPointers();
+
+        // Setting up the index buffer
         if (this.indexBuffer == null) this.indexBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.indices), gl.DYNAMIC_DRAW);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(this.indices), gl.DYNAMIC_DRAW);
     }
 
-    bindPlaneData(){
-        gl.enableVertexAttribArray(this.program.aVertexPosition);
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+    bindVertexAttribPointers(){
+        gl.vertexAttribPointer(this.program.aVertexPosition, 3, gl.FLOAT, false, 5 * 4, 0);
+        gl.vertexAttribPointer(this.program.aTextCoord, 2, gl.FLOAT, false, 5 * 4, 3 * 4);
     }
 
     planeUpdate(x, z){
 
-        let factor = (this.size/this.subdivisions)
+        let factor = (this.size / this.subdivisions)
         x = -Math.floor(x / factor) * factor;
         z = -Math.floor(z / factor) * factor;
         
-        if (this.dist(x, z, this.currentOrigin[0], this.currentOrigin[1]) < 10){
+        if (this.dist(x, z, this.currentOrigin[0], this.currentOrigin[1]) < 50){
+            return;
+        }
+
+        if (this.updateStage == 0){
+            this.createPlane();
             return;
         }
 
         this.bufferPlaneData(x, z);
 
+        this.updateStage = 0;
+        
         // Clean
         gl.bindVertexArray(null);
         gl.bindBuffer(gl.ARRAY_BUFFER, null);
