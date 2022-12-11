@@ -74,7 +74,6 @@ function initProgram() {
     terrainGen.program.projection = gl.getUniformLocation(terrainGen.program, 'projection');
     terrainGen.program.viewRot = gl.getUniformLocation(terrainGen.program, 'viewRot');
     terrainGen.program.view = gl.getUniformLocation(terrainGen.program, 'view');
-    terrainGen.program.textureLocation = gl.getUniformLocation(terrainGen.program, "u_texture");
 
     /* sphere */
     const vertexShaderSphere = getShader('vertex-shader-sphere');
@@ -107,6 +106,7 @@ function initProgram() {
     // Set up the buffers
 function initBuffers() {
 
+    terrainGen.createPlane();
     terrainGen.bufferPlaneData(0 , 0);
 
     // Clean
@@ -120,8 +120,6 @@ function initBuffers() {
     gl.bindVertexArray(null);
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
-
-    setTexcoords(gl);
 
     // create texture
     var texture = gl.createTexture();
