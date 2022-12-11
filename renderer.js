@@ -95,14 +95,13 @@ function initProgram() {
     // for easy access later in the code
     sphere.program.aVertexPosition = gl.getAttribLocation(sphere.program, 'aVertexPosition');
     //var positionLocation = gl.getAttribLocation(sphere.program, "a_position");
-    sphere.program.positionLocation = gl.getAttribLocation(sphere.program, "a_position");
+    //sphere.program.positionLocation = gl.getAttribLocation(sphere.program, "a_position");
     sphere.program.textcoordLocation = gl.getAttribLocation(sphere.program, "a_textcoord");
     sphere.program.projection = gl.getUniformLocation(sphere.program, 'projection');
     sphere.program.viewRot = gl.getUniformLocation(sphere.program, 'viewRot');
     sphere.program.view = gl.getUniformLocation(sphere.program, 'view');
     sphere.program.matrixLocation = gl.getUniformLocation(sphere.program, "u_matrix");
     sphere.program.textureLocation = gl.getUniformLocation(sphere.program, "u_texture");
-
 
 }
 
@@ -126,6 +125,8 @@ function initBuffers() {
     // texture buffer?
     var textcoordBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, textcoordBuffer);
+    gl.enableVertexAttribArray(textcoordLocation);
+    gl.vertexAttribPointer(textcoordLocation, 2, gl.FLOAT, flase, 0, 0);
     // TODO: create function to fill in buffer with text coords based on this tutorial:
     // https://webglfundamentals.org/webgl/lessons/webgl-3d-textures.html
     setTexcoords(gl);
@@ -245,7 +246,14 @@ function draw() {
 }
 
 // Fill the buffer with texture coordinates the
-function setTexcoords(gl) { }
+// TODO: figure out points for a sphere
+function setTexcoords(gl) { 
+    gl.bufferData(
+        gl.ARRAY_BUFFER,
+        new Float32Array( [] ), 
+        gl.STATIC_DRAW
+    );
+}
 
 // Entry point to our application
 function init() {

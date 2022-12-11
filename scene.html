@@ -114,7 +114,8 @@
         // texture coords from https://webglfundamentals.org/webgl/lessons/webgl-3d-textures.html 
         // Question: can I just use in and out?
         attribute vec2 a_textcoord;
-        varying vec2 v_textcoord;
+        attribute vec2 v_textcoord;
+        //varying vec2 v_textcoord;
 
       void main(void) {
         // Apply Projection and view matrices
@@ -156,8 +157,7 @@
           // Add lighting
           float lightingFactor = dot(normal.xyz, normalize(lightDir));
 
-          //fragColor = vec4(color * (lightingFactor), 1);
-          fragColor = texture2D(u_texture, v_textcoord);
+          fragColor = vec4(color * (lightingFactor), 1);
         }
     </script>
 
@@ -181,7 +181,8 @@
         //vec3 color = vec3(0.11,0.23,1.00);
         vec3 color = vec3(round(UV.x) * round(UV.y), round(UV.x) * round(UV.y), round(UV.x) * round(UV.y));
 
-        fragColor = vec4(color * lightingFactor, 1);
+       // fragColor = vec4(color * lightingFactor, 1);
+        fragColor = texture2D(u_texture, v_textcoord);
       }
   </script>
 
