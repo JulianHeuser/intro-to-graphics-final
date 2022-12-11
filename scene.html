@@ -120,12 +120,12 @@
     
       #version 300 es
 
-      out vec3 normal;
-      out vec2 vTextCoord;
-
       // Supplied vertex position attribute
       in vec4 aVertexPosition;
       in vec2 aTextCoord;
+
+      out vec3 normal;
+      out vec2 vTextCoord;
 
       uniform mat4 projection;
       uniform mat4 viewRot;
@@ -141,7 +141,7 @@
       
         // pass textcoord to fragment shader
         vTextCoord = aTextCoord;
-        // image 
+
       }
     </script>
 
@@ -153,7 +153,7 @@
       vec3 lightDir = vec3(0.7, -1.0, 0.15);
       
       in vec3 normal;
-      in vec2 vTextCoord;
+      in vec2 vTextCoord;       // texture coords from https://webglfundamentals.org/webgl/lessons/webgl-3d-textures.html
 
       // the texture 
       uniform sampler2D u_texture;
