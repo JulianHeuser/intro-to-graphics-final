@@ -11,8 +11,8 @@ class TerrainGen{
     currentOrigin = [0, 0]
 
     planeHeight = -15;
-    subdivisions = 100;
-    size = 100;
+    subdivisions = 300;
+    size = 500;
     textCoordSize = 10;
 
     constructor(){}
@@ -67,7 +67,7 @@ class TerrainGen{
         // Setting up the index buffer
         if (this.indexBuffer == null) this.indexBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.indices), gl.DYNAMIC_DRAW);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(this.indices), gl.DYNAMIC_DRAW);
     }
 
     bindVertexAttribPointers(){
@@ -81,7 +81,7 @@ class TerrainGen{
         x = -Math.floor(x / factor) * factor;
         z = -Math.floor(z / factor) * factor;
         
-        if (this.dist(x, z, this.currentOrigin[0], this.currentOrigin[1]) < 10){
+        if (this.dist(x, z, this.currentOrigin[0], this.currentOrigin[1]) < 50){
             return;
         }
 

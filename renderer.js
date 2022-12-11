@@ -230,7 +230,7 @@ function draw() {
     terrainGen.bindVertexAttribPointers();
 
     // Draw to the scene using triangle primitives
-    gl.drawElements(gl.TRIANGLES, terrainGen.indices.length, gl.UNSIGNED_SHORT, 0);
+    gl.drawElements(gl.TRIANGLES, terrainGen.indices.length, gl.UNSIGNED_INT, 0);
 
 
 
