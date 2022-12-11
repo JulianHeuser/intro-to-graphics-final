@@ -121,13 +121,6 @@ function initBuffers() {
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
 
-    // texture buffer?
-    var textcoordBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, textcoordBuffer);
-    gl.enableVertexAttribArray(textcoordLocation);
-    gl.vertexAttribPointer(textcoordLocation, 2, gl.FLOAT, flase, 0, 0);
-    // TODO: create function to fill in buffer with text coords based on this tutorial:
-    // https://webglfundamentals.org/webgl/lessons/webgl-3d-textures.html
     setTexcoords(gl);
 
     // create texture
