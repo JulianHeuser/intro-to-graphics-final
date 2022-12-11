@@ -134,15 +134,15 @@ function initBuffers() {
     var texture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texture);
     // not sure why I need to fill in the texture before I load an image... just following the tutorial
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
-        new Uint8Array([0, 0, 255, 255]));
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 255, 255]));
+    
     // Asynchronously load an image
     var image = new Image();
-    image.src = "https://images0.pixlis.com/background-image-checkers-chequered-checkered-squares-seamless-tileable-fun-blue-outrageous-orange-236jf6.png";
+    image.src = "Grass03_Base Color.jpg";
     image.addEventListener('load', function() {
         // Now that the image has loaded make copy it to the texture.
         gl.bindTexture(gl.TEXTURE_2D, texture);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,gl.UNSIGNED_BYTE, image);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, 4096, 4096, 0, gl.RGB, gl.UNSIGNED_BYTE, image);
         gl.generateMipmap(gl.TEXTURE_2D);
     });
 }
