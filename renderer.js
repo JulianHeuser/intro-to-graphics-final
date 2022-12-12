@@ -74,6 +74,7 @@ function initProgram() {
     terrainGen.program.projection = gl.getUniformLocation(terrainGen.program, 'projection');
     terrainGen.program.viewRot = gl.getUniformLocation(terrainGen.program, 'viewRot');
     terrainGen.program.view = gl.getUniformLocation(terrainGen.program, 'view');
+    terrainGen.program.lightDir = gl.getUniformLocation(terrainGen.program, 'lightDir');
 
     /* sphere */
     const vertexShaderSphere = getShader('vertex-shader-sphere');
@@ -100,6 +101,7 @@ function initProgram() {
     sphere.program.viewRot = gl.getUniformLocation(sphere.program, 'viewRot');
     sphere.program.view = gl.getUniformLocation(sphere.program, 'view');
     sphere.program.rotation = gl.getUniformLocation(sphere.program, 'rotation');
+    sphere.program.lightDir = gl.getUniformLocation(sphere.program, 'lightDir');
 
 }
 
@@ -144,12 +146,13 @@ function initBuffers() {
     
     // Asynchronously load an image
     var sphereImage = new Image();
-    sphereImage.src = "checkerboard image.jpg";
+    sphereImage.src = "jupiter.jpg";
     sphereImage.addEventListener('load', function() {
         // Now that the image has loaded make copy it to the texture.
         gl.bindTexture(gl.TEXTURE_2D, sphere.sphereTexture);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, sphereImage);
         gl.generateMipmap(gl.TEXTURE_2D);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     });
 }
 
@@ -208,7 +211,7 @@ function draw() {
     // Local rotation matrix for sphere
     gamma = 0;
     alpha = 0;
-    beta = (d.getTime() / 2000) % (Math.PI * 2);
+    beta = (d.getTime() / 6000) % (Math.PI * 2);
     let sphereRotMat4 = [
         Math.cos(alpha) * Math.cos(beta),                                                       Math.sin(alpha) * Math.cos(beta),                                                       -Math.sin(beta),                   0,
         Math.cos(alpha) * Math.sin(beta) * Math.sin(gamma) - Math.sin(alpha) * Math.cos(gamma), Math.sin(alpha) * Math.sin(beta) * Math.sin(gamma) + Math.cos(alpha) * Math.cos(gamma), Math.cos(beta) * Math.sin(gamma),  0,
@@ -228,6 +231,7 @@ function draw() {
     gl.uniformMatrix4fv(terrainGen.program.viewRot, false, new Float32Array(cameraRotMat4));
     gl.uniformMatrix4fv(terrainGen.program.view, false, new Float32Array(cameraViewMat4));
     gl.uniformMatrix4fv(terrainGen.program.projection, false, new Float32Array(projectionMat4));
+    gl.uniform3f(terrainGen.program.lightDir, -1.155, 0.577, 0.577);
 
     // Bind buffers
     gl.bindBuffer(gl.ARRAY_BUFFER, terrainGen.vertexBuffer);
@@ -241,7 +245,6 @@ function draw() {
     gl.drawElements(gl.TRIANGLES, terrainGen.indices.length, gl.UNSIGNED_INT, 0);
 
 
-
     /* DRAW SPHERE */    
     gl.useProgram(sphere.program);
     // should buffer sphere data be called here?
@@ -251,6 +254,7 @@ function draw() {
     gl.uniformMatrix4fv(sphere.program.view, false, new Float32Array(sphereViewMat4));
     gl.uniformMatrix4fv(sphere.program.projection, false, new Float32Array(projectionMat4));
     gl.uniformMatrix4fv(sphere.program.rotation, false, new Float32Array(sphereRotMat4));
+    gl.uniform3f(sphere.program.lightDir, -1.155, 0.577, 0.577);
 
     // bind buffers
     gl.bindBuffer(gl.ARRAY_BUFFER, sphere.vertexBuffer);

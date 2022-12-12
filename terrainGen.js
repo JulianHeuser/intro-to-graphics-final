@@ -6,6 +6,8 @@ class TerrainGen{
     vertexBuffer = null;
     indexBuffer = null;
 
+    terrainTexture;
+
     program;
 
     currentOrigin = [0, 0]
